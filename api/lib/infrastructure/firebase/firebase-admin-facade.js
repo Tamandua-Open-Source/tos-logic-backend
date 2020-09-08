@@ -17,6 +17,18 @@ class FirebaseAdminFacade {
     const decodedToken = await firebaseAdmin.auth().verifyIdToken(idToken)
     return decodedToken.uid
   }
+
+  async send(title, body, fcmToken) {
+    const message = {
+      notification: {
+        title: title,
+        body: body,
+      },
+      token: fcmToken,
+    }
+
+    return await firebaseAdmin.messaging().send(message)
+  }
 }
 
 export default FirebaseAdminFacade
