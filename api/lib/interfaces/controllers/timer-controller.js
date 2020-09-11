@@ -19,7 +19,7 @@ class TimerController {
       if (state) {
         return HttpResponse.ok({ message: 'State changed successfully', state })
       } else {
-        return HttpResponse.serverError()
+        return HttpResponse.ok({ message: 'The state cannot be changed' })
       }
     } catch (error) {
       console.log(error)

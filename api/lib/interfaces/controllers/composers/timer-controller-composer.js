@@ -1,4 +1,5 @@
 import TimerController from '../timer-controller'
+import UserRepository from '../../../infrastructure/repositories/user-repository'
 
 import {
   StartTimerUseCase,
@@ -15,7 +16,11 @@ import {
 //internal action facade
 class TimerControllerComposer {
   static compose() {
-    const startTimerUseCase = new StartTimerUseCase()
+    const userRepository = new UserRepository()
+
+    const startTimerUseCase = new StartTimerUseCase({
+      userRepository,
+    })
     const finishTimerUseCase = new FinishTimerUseCase()
     const workTimerUseCase = new WorkTimerUseCase()
     const breakTimerUseCase = new BreakTimerUseCase()
