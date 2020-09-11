@@ -11,14 +11,14 @@ class UserRepository extends IUserRepository {
   }
 
   async patchUserPreferences(userId, updatedFields) {
-    const preferences = db.UserPreference.findOne({
+    const preferences = await db.UserPreference.findOne({
       where: {
         UserId: userId,
       },
     })
 
     if (preferences) {
-      return await preferences.update({ updatedFields })
+      return preferences.update(updatedFields)
     }
 
     return null
@@ -35,39 +35,18 @@ class UserRepository extends IUserRepository {
       where: {
         UserId: userId,
       },
-      attributes: ['startTime', 'breakDuration', 'workDuration'],
       include: [
         {
           model: db.UserPreferenceWeeklyStretchActivity,
-          attributes: [
-            'monday',
-            'tuesday',
-            'wednesday',
-            'thursday',
-            'friday',
-            'saturday',
-            'sunday',
-          ],
         },
         {
           model: db.UserPreferenceWeeklyWorkActivity,
-          attributes: [
-            'monday',
-            'tuesday',
-            'wednesday',
-            'thursday',
-            'friday',
-            'saturday',
-            'sunday',
-          ],
         },
         {
           model: db.UserPreferenceTimeType,
-          attributes: ['id', 'name'],
         },
         {
           model: db.UserPreferenceStartPeriod,
-          attributes: ['id', 'name', 'startsAt', 'endsAt'],
         },
       ],
     })

@@ -1,6 +1,5 @@
 import express from 'express'
 import bodyParser from 'body-parser'
-import UserRouter from './routers/user-router'
 import TimerRouter from './routers/timer-router'
 import compression from 'compression'
 
@@ -11,7 +10,6 @@ app.use(compression())
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: false }))
 
-app.use('/api/users', UserRouter)
 app.use('/api/timer', TimerRouter)
 
 app.get('/', (_req, res) =>
