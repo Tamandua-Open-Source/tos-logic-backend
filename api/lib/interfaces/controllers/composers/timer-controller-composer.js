@@ -1,5 +1,6 @@
 import TimerController from '../timer-controller'
 import UserRepository from '../../../infrastructure/repositories/user-repository'
+import StateMachineFacade from '../../../infrastructure/facades/state-machine-facade'
 
 import {
   StartTimerUseCase,
@@ -17,15 +18,32 @@ import {
 class TimerControllerComposer {
   static compose() {
     const userRepository = new UserRepository()
+    const stateMachineFacade = new StateMachineFacade()
 
     const startTimerUseCase = new StartTimerUseCase({
       userRepository,
+      stateMachineFacade,
     })
-    const finishTimerUseCase = new FinishTimerUseCase()
-    const workTimerUseCase = new WorkTimerUseCase()
-    const breakTimerUseCase = new BreakTimerUseCase()
-    const pauseTimerUseCase = new PauseTimerUseCase()
-    const resumeTimerUseCase = new ResumeTimerUseCase()
+    const finishTimerUseCase = new FinishTimerUseCase({
+      userRepository,
+      stateMachineFacade,
+    })
+    const workTimerUseCase = new WorkTimerUseCase({
+      userRepository,
+      stateMachineFacade,
+    })
+    const breakTimerUseCase = new BreakTimerUseCase({
+      userRepository,
+      stateMachineFacade,
+    })
+    const pauseTimerUseCase = new PauseTimerUseCase({
+      userRepository,
+      stateMachineFacade,
+    })
+    const resumeTimerUseCase = new ResumeTimerUseCase({
+      userRepository,
+      stateMachineFacade,
+    })
 
     return new TimerController({
       startTimerUseCase,
