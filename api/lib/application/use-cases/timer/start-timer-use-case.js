@@ -1,58 +1,40 @@
 class StartTimerUseCase {
-  constructor({ userRepository }) {
+  constructor({ userRepository, stateMachineFacade }) {
     this.userRepository = userRepository
+    this.stateMachineFacade = stateMachineFacade
   }
 
   async execute(userId) {
-    //DEBUG RESET
-    await this.userRepository.patchUserPreferences(userId, {
-      lastState: 'WORK',
-      currentState: 'INATIVE',
-    })
+    //DEBUG: RESET TO TRIGGABLE STATE
+    // await this.userRepository.patchUserPreferences(userId, {
+    //   lastState: 'WORK',
+    //   currentState: 'INATIVE',
+    // })
 
     const preferences = await this.userRepository.getUserPreferences(userId)
-    if (!preferences) return null
 
-    if (preferences.currentState !== 'INATIVE') return null
+    if (!preferences) {
+      return null
+    }
 
-    //3
+    if (!this.stateMachineFacade.canStartFrom(preferences.currentState)) {
+      return null
+    }
 
-    //4
+    //na QueueFacade: remove push notifications
+    //na QueueFacade: remove internal actions
 
     const patchedPreferences = await this.userRepository.patchUserPreferences(
       userId,
       {
         lastWorkStartTime: new Date(),
         lastState: preferences.currentState,
-        currentState: 'WORK',
+        currentState: this.stateMachineFacade.onStart(),
       }
     )
 
-    //7
-
-    //8
-
-    console.log(
-      'lastState: ',
-      reset.lastState,
-      ' -> ',
-      patchedPreferences.lastState,
-      '\nCurrentState: ',
-      reset.currentState,
-      ' -> ',
-      patchedPreferences.currentState
-    )
-    /**
-     * consulta o estado atual do banco
-     * 1 se for INATIVE
-     * 2 na UserRepository: consulta as variáveis
-     * 3 na QueueFacade: remove push notifications pelo userId
-     * 4 na QueueFacade: remove internal actions pelo userId
-     * 5 no UserRepository: atualiza a last_work_start_time
-     * 6 no UserRepository: atualize last state e current state
-     * 7 na QueueFacade: adiciona next_break
-     * 8 na QueueFacade: adiciona move_to_work_idle
-     **/
+    //na QueueFacade: adiciona next_break
+    //na QueueFacade: adiciona move_to_work_idle
 
     return {
       from: patchedPreferences.lastState,
