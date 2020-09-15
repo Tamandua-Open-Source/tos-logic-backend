@@ -1,7 +1,8 @@
 class FinishTimerUseCase {
-  constructor({ userRepository, stateMachineFacade }) {
+  constructor({ userRepository, stateMachineFacade, schedulingFacade }) {
     this.userRepository = userRepository
     this.stateMachineFacade = stateMachineFacade
+    this.schedulingFacade = schedulingFacade
   }
 
   async execute(userId) {
