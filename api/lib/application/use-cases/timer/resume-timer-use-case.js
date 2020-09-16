@@ -22,7 +22,7 @@ class ResumeTimerUseCase {
       return null
     }
 
-    //na QueueFacade: remove push notifications
+    this.schedulingFacade.removeAllScheduledPushNotifications(userId)
     //na QueueFacade: remove internal actions
 
     const patchedPreferences = await this.userRepository.patchUserPreferences(
@@ -35,10 +35,10 @@ class ResumeTimerUseCase {
     )
 
     if (preferences.lastState === this.stateMachineFacade.workState) {
-      //na QueueFacade: adiciona next_break
+      this.schedulingFacade.scheduleNextBreakNotification(userId, null)
       //na QueueFacade: adiciona move_to_work_idle
     } else if (preferences.lastState === this.stateMachineFacade.breakState) {
-      //na QueueFacade: adiciona next_work
+      this.schedulingFacade.scheduleNextWorkNotification(userId, null)
       //na QueueFacade: adiciona move_to_break_idle
     }
 

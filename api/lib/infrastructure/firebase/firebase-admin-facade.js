@@ -18,11 +18,18 @@ class FirebaseAdminFacade {
     return decodedToken.uid
   }
 
-  async send(title, body, fcmToken) {
+  async send(title, body, category, fcmToken) {
     const message = {
       notification: {
         title: title,
         body: body,
+      },
+      apns: {
+        payload: {
+          aps: {
+            category: category,
+          },
+        },
       },
       token: fcmToken,
     }
