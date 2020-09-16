@@ -10,7 +10,12 @@ class StateMachineFacade extends IStateMachineFacade {
   }
 
   canFinishFrom(currentState) {
-    return [this.workState, this.workIdleState].includes(currentState)
+    return [
+      this.workState,
+      this.workIdleState,
+      this.pauseState,
+      this.breakState,
+    ].includes(currentState)
   }
 
   canWorkFrom(currentState) {
