@@ -34,7 +34,10 @@ class WorkTimerUseCase {
       }
     )
 
-    this.schedulingFacade.scheduleNextBreakNotification(userId, null)
+    this.schedulingFacade.scheduleNextBreakNotification(
+      userId,
+      preferences.fcmToken
+    )
     //na QueueFacade: adiciona move_to_work_idle
 
     return {

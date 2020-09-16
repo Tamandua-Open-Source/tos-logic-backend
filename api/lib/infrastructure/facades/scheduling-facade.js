@@ -36,13 +36,12 @@ class SchedulingFacade extends ISchedulingFacade {
     console.log('removeAllScheduledIdleSystemActions')
   }
 
-  scheduleStartCycleNotification(userId, _datetime) {
+  scheduleStartCycleNotification(userId, fcmToken) {
     const data = {
       userId: userId,
       title: 'START_CYCLE',
       body: 'Olá ' + userId + ', está na hora de começar a trabalhar.',
-      fcmToken:
-        'fB_deuQbPkTOsFUPrb_I45:APA91bHP6kNOOahgukAMDSMF9ppuOD832iN0204CJG_COQHC9HQW5cqTlR9zxPLtQXYXdragbmnmqI8rE2O9KJSN-vpN_AWyC5dv78f7VwKPCPkRRV97f0xMie8DLIP0ak0nNUqoRCu2',
+      fcmToken: fcmToken,
       category: 'UN_START_CATEGORY',
     }
 
@@ -55,13 +54,12 @@ class SchedulingFacade extends ISchedulingFacade {
     this.notificationQueue.add(data, options)
   }
 
-  scheduleNextBreakNotification(userId, _datetime) {
+  scheduleNextBreakNotification(userId, fcmToken) {
     const data = {
       userId: userId,
       title: 'NEXT_BREAK',
       body: 'Olá ' + userId + ', está na hora de fazer uma pausa',
-      fcmToken:
-        'fB_deuQbPkTOsFUPrb_I45:APA91bHP6kNOOahgukAMDSMF9ppuOD832iN0204CJG_COQHC9HQW5cqTlR9zxPLtQXYXdragbmnmqI8rE2O9KJSN-vpN_AWyC5dv78f7VwKPCPkRRV97f0xMie8DLIP0ak0nNUqoRCu2',
+      fcmToken: fcmToken,
       category: 'UN_BREAK_START_CATEGORY',
     }
 
@@ -74,13 +72,12 @@ class SchedulingFacade extends ISchedulingFacade {
     this.notificationQueue.add(data, options)
   }
 
-  scheduleNextWorkNotification(userId, _datetime) {
+  scheduleNextWorkNotification(userId, fcmToken) {
     const data = {
       userId: userId,
       title: 'NEXT_WORK',
       body: 'Olá ' + userId + ', está na hora de voltar a trabalhar',
-      fcmToken:
-        'fB_deuQbPkTOsFUPrb_I45:APA91bHP6kNOOahgukAMDSMF9ppuOD832iN0204CJG_COQHC9HQW5cqTlR9zxPLtQXYXdragbmnmqI8rE2O9KJSN-vpN_AWyC5dv78f7VwKPCPkRRV97f0xMie8DLIP0ak0nNUqoRCu2',
+      fcmToken: fcmToken,
       category: 'UN_BREAK_END_CATEGORY',
     }
 
@@ -93,15 +90,15 @@ class SchedulingFacade extends ISchedulingFacade {
     this.notificationQueue.add(data, options)
   }
 
-  scheduleWorkIdleNotification(_userId, _datetime) {
+  scheduleWorkIdleNotification(_userId, _fcmToken) {
     console.log('scheduleWorkIdleNotification')
   }
 
-  scheduleBreakIdleNotification(_userId, _datetime) {
+  scheduleBreakIdleNotification(_userId, _fcmToken) {
     console.log('scheduleBreakIdleNotification')
   }
 
-  schedulePauseIdleNotification(_userId, _datetime) {
+  schedulePauseIdleNotification(_userId, _fcmToken) {
     console.log('schedulePauseIdleNotification')
   }
 
