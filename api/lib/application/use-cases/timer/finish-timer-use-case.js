@@ -33,8 +33,10 @@ class FinishTimerUseCase {
       }
     )
 
-    this.schedulingFacade.scheduleStartCycleNotification(userId, null)
-    //na QueueFacade: adiciona start_cycle
+    this.schedulingFacade.scheduleStartCycleNotification(
+      userId,
+      preferences.fcmToken
+    )
 
     return {
       from: patchedPreferences.lastState,

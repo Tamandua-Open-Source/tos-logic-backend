@@ -35,10 +35,16 @@ class ResumeTimerUseCase {
     )
 
     if (preferences.lastState === this.stateMachineFacade.workState) {
-      this.schedulingFacade.scheduleNextBreakNotification(userId, null)
+      this.schedulingFacade.scheduleNextBreakNotification(
+        userId,
+        preferences.fcmToken
+      )
       //na QueueFacade: adiciona move_to_work_idle
     } else if (preferences.lastState === this.stateMachineFacade.breakState) {
-      this.schedulingFacade.scheduleNextWorkNotification(userId, null)
+      this.schedulingFacade.scheduleNextWorkNotification(
+        userId,
+        preferences.fcmToken
+      )
       //na QueueFacade: adiciona move_to_break_idle
     }
 
