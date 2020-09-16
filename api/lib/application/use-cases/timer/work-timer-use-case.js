@@ -22,7 +22,7 @@ class WorkTimerUseCase {
       return null
     }
 
-    //na QueueFacade: remove push notifications
+    this.schedulingFacade.removeAllScheduledPushNotifications(userId)
     //na QueueFacade: remove internal actions
 
     const patchedPreferences = await this.userRepository.patchUserPreferences(
@@ -34,7 +34,7 @@ class WorkTimerUseCase {
       }
     )
 
-    //na QueueFacade: adiciona next_break
+    this.schedulingFacade.scheduleNextBreakNotification(userId, null)
     //na QueueFacade: adiciona move_to_work_idle
 
     return {

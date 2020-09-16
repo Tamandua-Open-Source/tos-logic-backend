@@ -22,7 +22,7 @@ class FinishTimerUseCase {
       return null
     }
 
-    //na QueueFacade: remove push notifications
+    this.schedulingFacade.removeAllScheduledPushNotifications(userId)
     //na QueueFacade: remove internal actions
 
     const patchedPreferences = await this.userRepository.patchUserPreferences(
@@ -33,6 +33,7 @@ class FinishTimerUseCase {
       }
     )
 
+    this.schedulingFacade.scheduleStartCycleNotification(userId, null)
     //na QueueFacade: adiciona start_cycle
 
     return {
