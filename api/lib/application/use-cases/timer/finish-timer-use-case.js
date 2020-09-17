@@ -23,7 +23,7 @@ class FinishTimerUseCase {
     }
 
     this.schedulingFacade.removeAllScheduledPushNotifications(userId)
-    //na QueueFacade: remove internal actions
+    this.schedulingFacade.removeAllScheduledIdleSystemActions(userId)
 
     const patchedPreferences = await this.userRepository.patchUserPreferences(
       userId,
