@@ -3,7 +3,7 @@ import UserRepository from '../../../infrastructure/repositories/user-repository
 import StateMachineFacade from '../../../infrastructure/facades/state-machine-facade'
 import IdleSystemFacade from '../../../infrastructure/facades/idle-system-facade'
 import SchedulingFacade from '../../../infrastructure/facades/scheduling-facade'
-import FirebaseAdminFacade from '../../../infrastructure/firebase/firebase-admin-facade'
+import FirebaseAdminFacade from '../../../infrastructure/facades/firebase-admin-facade'
 
 import {
   StartTimerUseCase,

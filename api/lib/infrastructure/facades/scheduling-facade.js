@@ -1,5 +1,8 @@
 import ISchedulingFacade from '../../application/facade-interfaces/i-scheduling-facade'
 import Queue from 'bull'
+import * as dotenv from 'dotenv'
+
+dotenv.config()
 
 class SchedulingFacade extends ISchedulingFacade {
   constructor({ firebaseAdminFacade, idleSystemFacade }) {
@@ -8,10 +11,7 @@ class SchedulingFacade extends ISchedulingFacade {
     this.idleSystemFacade = idleSystemFacade
 
     this.notificationQueue = new Queue('notification', {
-      redis: {
-        host: '127.0.0.1',
-        port: 6379,
-      },
+      redis: process.env.REDIS_URL ?? undefined,
     })
 
     this.notificationQueue.process(async (job) => {

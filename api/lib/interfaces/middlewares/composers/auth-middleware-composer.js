@@ -1,4 +1,4 @@
-import FirebaseAdminFacade from '../../../infrastructure/firebase/firebase-admin-facade'
+import FirebaseAdminFacade from '../../../infrastructure/facades/firebase-admin-facade'
 import AuthMiddleware from '../auth-middleware'
 import VerifyTokenUseCase from '../../../application/use-cases/auth/verify-token-use-case'
 
