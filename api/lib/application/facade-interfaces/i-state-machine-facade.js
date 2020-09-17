@@ -2,7 +2,7 @@ import { UnimplementedError } from '../../core/errors'
 
 class IStateMachineFacade {
   constructor() {
-    this.inativeState = 'INATIVE'
+    this.inactiveState = 'INACTIVE'
     this.workState = 'WORK'
     this.breakState = 'BREAK'
     this.pauseState = 'PAUSE'

@@ -13,7 +13,7 @@ class IIdleSystemFacade {
     throw new UnimplementedError()
   }
 
-  moveToInative() {
+  moveToInactive() {
     throw new UnimplementedError()
   }
 }
