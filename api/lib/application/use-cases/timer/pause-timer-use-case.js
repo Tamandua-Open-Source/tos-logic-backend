@@ -22,8 +22,8 @@ class PauseTimerUseCase {
       return null
     }
 
-    //na QueueFacade: remove push notifications
-    //na QueueFacade: remove internal actions
+    this.schedulingFacade.removeAllScheduledPushNotifications(userId)
+    this.schedulingFacade.removeAllScheduledIdleSystemActions(userId)
 
     const patchedPreferences = await this.userRepository.patchUserPreferences(
       userId,
@@ -33,8 +33,7 @@ class PauseTimerUseCase {
         currentState: this.stateMachineFacade.onPause(),
       }
     )
-
-    //na QueueFacade: adiciona move_to_pause_idle
+    this.schedulingFacade.schedulePauseIdleAction(userId, preferences.fcmToken)
 
     return {
       from: patchedPreferences.lastState,

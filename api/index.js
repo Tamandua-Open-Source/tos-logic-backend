@@ -1,5 +1,5 @@
 import * as dotenv from 'dotenv'
-import FirebaseAdminFacade from './lib/infrastructure/firebase/firebase-admin-facade'
+import FirebaseAdminFacade from './lib/infrastructure/facades/firebase-admin-facade'
 
 dotenv.config()
 

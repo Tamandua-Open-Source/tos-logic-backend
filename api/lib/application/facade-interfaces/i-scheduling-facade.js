@@ -9,43 +9,43 @@ class ISchedulingFacade {
     throw new UnimplementedError()
   }
 
-  scheduleStartCycleNotification(_userId, _datetime) {
+  scheduleStartCycleNotification(_userId, _fcmToken) {
     throw new UnimplementedError()
   }
 
-  scheduleNextBreakNotification(_userId, _datetime) {
+  scheduleNextBreakNotification(_userId, _fcmToken) {
     throw new UnimplementedError()
   }
 
-  scheduleNextWorkNotification(_userId, _datetime) {
+  scheduleNextWorkNotification(_userId, _fcmToken) {
     throw new UnimplementedError()
   }
 
-  scheduleWorkIdleNotification(_userId, _datetime) {
+  scheduleWorkIdleNotification(_userId, _fcmToken) {
     throw new UnimplementedError()
   }
 
-  scheduleBreakIdleNotification(_userId, _datetime) {
+  scheduleBreakIdleNotification(_userId, _fcmToken) {
     throw new UnimplementedError()
   }
 
-  schedulePauseIdleNotification(_userId, _datetime) {
+  schedulePauseIdleNotification(_userId, _fcmToken) {
     throw new UnimplementedError()
   }
 
-  scheduleWorkIdleAction(_userId, _datetime) {
+  scheduleWorkIdleAction(_userId, _fcmToken) {
     throw new UnimplementedError()
   }
 
-  scheduleBreakIdleAction(_userId, _datetime) {
+  scheduleBreakIdleAction(_userId, _fcmToken) {
     throw new UnimplementedError()
   }
 
-  schedulePauseIdleAction(_userId, _datetime) {
+  schedulePauseIdleAction(_userId, _fcmToken) {
     throw new UnimplementedError()
   }
 
-  scheduleInativeAction(_userId, _datetime) {
+  scheduleInativeAction(_userId, _fcmToken) {
     throw new UnimplementedError()
   }
 }

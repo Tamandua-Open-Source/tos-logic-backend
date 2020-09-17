@@ -2,10 +2,12 @@ import express from 'express'
 import bodyParser from 'body-parser'
 import TimerRouter from './routers/timer-router'
 import compression from 'compression'
+import logger from 'morgan'
 
 const app = express()
 const port = process.env.PORT || 8001
 
+app.use(logger('dev'))
 app.use(compression())
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: false }))

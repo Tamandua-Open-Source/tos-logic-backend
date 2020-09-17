@@ -22,8 +22,8 @@ class StartTimerUseCase {
       return null
     }
 
-    //na QueueFacade: remove push notifications
-    //na QueueFacade: remove internal actions
+    this.schedulingFacade.removeAllScheduledPushNotifications(userId)
+    this.schedulingFacade.removeAllScheduledIdleSystemActions(userId)
 
     const patchedPreferences = await this.userRepository.patchUserPreferences(
       userId,
@@ -34,8 +34,11 @@ class StartTimerUseCase {
       }
     )
 
-    //na QueueFacade: adiciona next_break
-    //na QueueFacade: adiciona move_to_work_idle
+    this.schedulingFacade.scheduleNextBreakNotification(
+      userId,
+      preferences.fcmToken
+    )
+    this.schedulingFacade.scheduleWorkIdleAction(userId, preferences.fcmToken)
 
     return {
       from: patchedPreferences.lastState,

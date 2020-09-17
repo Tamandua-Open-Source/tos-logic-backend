@@ -6,11 +6,16 @@ class StateMachineFacade extends IStateMachineFacade {
   }
 
   canStartFrom(currentState) {
-    return [this.inativeState].includes(currentState)
+    return [this.inactiveState].includes(currentState)
   }
 
   canFinishFrom(currentState) {
-    return [this.workState, this.workIdleState].includes(currentState)
+    return [
+      this.workState,
+      this.workIdleState,
+      this.pauseState,
+      this.breakState,
+    ].includes(currentState)
   }
 
   canWorkFrom(currentState) {
@@ -34,7 +39,7 @@ class StateMachineFacade extends IStateMachineFacade {
   }
 
   onFinish() {
-    return this.inativeState
+    return this.inactiveState
   }
 
   onWork() {
