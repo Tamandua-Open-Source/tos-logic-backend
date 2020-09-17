@@ -33,19 +33,19 @@ class ISchedulingFacade {
     throw new UnimplementedError()
   }
 
-  scheduleWorkIdleAction(_userId, _datetime) {
+  scheduleWorkIdleAction(_userId, _fcmToken) {
     throw new UnimplementedError()
   }
 
-  scheduleBreakIdleAction(_userId, _datetime) {
+  scheduleBreakIdleAction(_userId, _fcmToken) {
     throw new UnimplementedError()
   }
 
-  schedulePauseIdleAction(_userId, _datetime) {
+  schedulePauseIdleAction(_userId, _fcmToken) {
     throw new UnimplementedError()
   }
 
-  scheduleInativeAction(_userId, _datetime) {
+  scheduleInativeAction(_userId, _fcmToken) {
     throw new UnimplementedError()
   }
 }

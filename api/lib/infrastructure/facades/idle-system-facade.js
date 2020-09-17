@@ -18,7 +18,7 @@ class IdleSystemFacade extends IIdleSystemFacade {
     console.log('moveToPauseIdle')
   }
 
-  async moveToInative() {
+  async moveToInactive() {
     console.log('moveToInative')
   }
 }
