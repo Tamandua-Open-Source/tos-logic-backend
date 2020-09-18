@@ -1,19 +1,26 @@
 import { UnimplementedError } from '../../core/errors'
 
 class IIdleSystemFacade {
-  moveToWorkIdle() {
+  constructor() {
+    this.workIdleState = 'WORK_IDLE'
+    this.breakIdleState = 'BREAK_STATE'
+    this.pauseIdleState = 'PAUSE_STATE'
+    this.inactiveState = 'INACTIVE_STATE'
+  }
+
+  moveToWorkIdle({ userId }) {
     throw new UnimplementedError()
   }
 
-  moveToWorkIdle() {
+  moveToBreakIdle({ userId }) {
     throw new UnimplementedError()
   }
 
-  moveToPauseIdle() {
+  moveToPauseIdle({ userId }) {
     throw new UnimplementedError()
   }
 
-  moveToInactive() {
+  moveToInactive({ userId }) {
     throw new UnimplementedError()
   }
 }
