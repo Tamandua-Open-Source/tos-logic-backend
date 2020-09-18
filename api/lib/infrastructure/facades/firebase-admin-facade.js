@@ -19,6 +19,14 @@ class FirebaseAdminFacade {
   }
 
   async send(title, body, category, fcmToken) {
+    console.log(
+      '[FIREBASE_ADMIN_FACADE] - sending message: ' +
+        category +
+        ' - ' +
+        title +
+        ' - ' +
+        body
+    )
     const message = {
       notification: {
         title: title,
