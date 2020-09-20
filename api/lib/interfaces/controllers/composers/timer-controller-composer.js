@@ -21,6 +21,7 @@ class TimerControllerComposer {
     const stateMachineFacade = new StateMachineFacade()
     const idleSystemFacade = new IdleSystemFacade({
       userRepository,
+      stateMachineFacade,
     })
     const schedulingFacade = new SchedulingFacade({
       firebaseAdminFacade,

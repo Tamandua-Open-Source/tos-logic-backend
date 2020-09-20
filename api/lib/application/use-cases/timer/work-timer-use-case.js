@@ -22,8 +22,8 @@ class WorkTimerUseCase {
       return null
     }
 
-    this.schedulingFacade.removeAllScheduledPushNotifications(userId)
-    this.schedulingFacade.removeAllScheduledIdleSystemActions(userId)
+    this.schedulingFacade.removeAllScheduledPushNotifications({ userId })
+    this.schedulingFacade.removeAllScheduledIdleSystemActions({ userId })
 
     const patchedPreferences = await this.userRepository.patchUserPreferences(
       userId,
@@ -34,11 +34,20 @@ class WorkTimerUseCase {
       }
     )
 
-    this.schedulingFacade.scheduleNextBreakNotification(
+    this.schedulingFacade.scheduleNextBreakNotification({
       userId,
-      preferences.fcmToken
-    )
-    this.schedulingFacade.scheduleWorkIdleAction(userId, preferences.fcmToken)
+      fcmToken: preferences.fcmToken,
+      delay: preferences.workDuration,
+    })
+
+    this.schedulingFacade.scheduleWorkIdleAction({
+      userId,
+      fcmToken: preferences.fcmToken,
+      delay: preferences.workLimitDuration,
+      delayToInactive:
+        preferences.workLimitDuration + preferences.workIdleLimitDuration,
+      delayStartCycle: 35000, //calcular
+    })
 
     return {
       from: patchedPreferences.lastState,

@@ -22,8 +22,8 @@ class FinishTimerUseCase {
       return null
     }
 
-    this.schedulingFacade.removeAllScheduledPushNotifications(userId)
-    this.schedulingFacade.removeAllScheduledIdleSystemActions(userId)
+    this.schedulingFacade.removeAllScheduledPushNotifications({ userId })
+    this.schedulingFacade.removeAllScheduledIdleSystemActions({ userId })
 
     const patchedPreferences = await this.userRepository.patchUserPreferences(
       userId,
@@ -33,10 +33,11 @@ class FinishTimerUseCase {
       }
     )
 
-    this.schedulingFacade.scheduleStartCycleNotification(
+    this.schedulingFacade.scheduleStartCycleNotification({
       userId,
-      preferences.fcmToken
-    )
+      fcmToken: preferences.fcmToken,
+      delay: 5000, //calcular o delay para o próximo dia
+    })
 
     return {
       from: patchedPreferences.lastState,

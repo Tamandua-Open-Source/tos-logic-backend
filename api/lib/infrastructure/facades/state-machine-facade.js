@@ -1,5 +1,6 @@
 import IStateMachineFacade from '../../application/facade-interfaces/i-state-machine-facade'
 
+//toda troca de estado tem que passar por aqui, todos os patchs, inclusive os idle
 class StateMachineFacade extends IStateMachineFacade {
   constructor() {
     super()

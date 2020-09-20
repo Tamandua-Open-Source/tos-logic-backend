@@ -22,8 +22,8 @@ class PauseTimerUseCase {
       return null
     }
 
-    this.schedulingFacade.removeAllScheduledPushNotifications(userId)
-    this.schedulingFacade.removeAllScheduledIdleSystemActions(userId)
+    this.schedulingFacade.removeAllScheduledPushNotifications({ userId })
+    this.schedulingFacade.removeAllScheduledIdleSystemActions({ userId })
 
     const patchedPreferences = await this.userRepository.patchUserPreferences(
       userId,
@@ -33,7 +33,15 @@ class PauseTimerUseCase {
         currentState: this.stateMachineFacade.onPause(),
       }
     )
-    this.schedulingFacade.schedulePauseIdleAction(userId, preferences.fcmToken)
+
+    this.schedulingFacade.schedulePauseIdleAction({
+      userId,
+      fcmToken: preferences.fcmToken,
+      delay: preferences.pauseLimitDuration,
+      delayToInactive:
+        preferences.pauseLimitDuration + preferences.pauseIdleLimitDuration,
+      delayStartCycle: 35000, //calcular
+    })
 
     return {
       from: patchedPreferences.lastState,

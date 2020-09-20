@@ -22,8 +22,8 @@ class ResumeTimerUseCase {
       return null
     }
 
-    this.schedulingFacade.removeAllScheduledPushNotifications(userId)
-    this.schedulingFacade.removeAllScheduledIdleSystemActions(userId)
+    this.schedulingFacade.removeAllScheduledPushNotifications({ userId })
+    this.schedulingFacade.removeAllScheduledIdleSystemActions({ userId })
 
     const patchedPreferences = await this.userRepository.patchUserPreferences(
       userId,
@@ -35,20 +35,64 @@ class ResumeTimerUseCase {
     )
 
     if (preferences.lastState === this.stateMachineFacade.workState) {
-      this.schedulingFacade.scheduleNextBreakNotification(
-        userId,
-        preferences.fcmToken
+      const lastWorkStartTime = new Date(preferences.lastWorkStartTime)
+      const lastPauseStartTime = new Date(preferences.lastPauseStartTime)
+      const elapsedDuration =
+        lastWorkStartTime.getMilliseconds() -
+        lastPauseStartTime.getMilliseconds()
+
+      console.log(
+        '[DEBUG] - WORK_STATE - elapsed duration: ',
+        elapsedDuration,
+        'ms',
+        lastWorkStartTime
       )
-      this.schedulingFacade.scheduleWorkIdleAction(userId, preferences.fcmToken)
+
+      this.schedulingFacade.scheduleNextBreakNotification({
+        userId,
+        fcmToken: preferences.fcmToken,
+        delay: preferences.workDuration - elapsedDuration,
+      })
+
+      this.schedulingFacade.scheduleWorkIdleAction({
+        userId,
+        fcmToken: preferences.fcmToken,
+        delay: 15000 ?? preferences.workLimitDuration - elapsedDuration,
+        delayToInactive:
+          preferences.workLimitDuration +
+          preferences.workIdleLimitDuration -
+          elapsedDuration,
+        delayStartCycle: 35000, //calcular
+      })
     } else if (preferences.lastState === this.stateMachineFacade.breakState) {
-      this.schedulingFacade.scheduleNextWorkNotification(
-        userId,
-        preferences.fcmToken
+      const lastBreakStartTime = new Date(preferences.lastBreakStartTime)
+      const lastPauseStartTime = new Date(preferences.lastPauseStartTime)
+      const elapsedDuration =
+        lastBreakStartTime.getMilliseconds() -
+        lastPauseStartTime.getMilliseconds()
+
+      console.log(
+        '[DEBUG] - BREAK_STATE - elapsed duration: ',
+        elapsedDuration,
+        'ms'
       )
-      this.schedulingFacade.scheduleBreakIdleAction(
+
+      this.schedulingFacade.scheduleNextWorkNotification({
         userId,
-        preferences.fcmToken
-      )
+        fcmToken: preferences.fcmToken,
+        delay: preferences.breakDuration - elapsedDuration,
+      })
+
+      this.schedulingFacade.scheduleBreakIdleAction({
+        userId,
+        fcmToken: preferences.fcmToken,
+        delay: preferences.breakLimitDuration - elapsedDuration,
+        delayToInactive:
+          preferences.breakLimitDuration +
+          preferences.breakIdleLimitDuration -
+          elapsedDuration,
+        delayStartCycle: 35000, //calcular
+      })
     }
 
     return {

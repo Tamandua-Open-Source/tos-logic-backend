@@ -1,51 +1,73 @@
 import { UnimplementedError } from '../../core/errors'
 
 class ISchedulingFacade {
-  removeAllScheduledPushNotifications(_userId) {
+  removeAllScheduledPushNotifications({ userId }) {
     throw new UnimplementedError()
   }
 
-  removeAllScheduledIdleSystemActions(_userId) {
+  removeAllScheduledIdleSystemActions({ userId }) {
     throw new UnimplementedError()
   }
 
-  scheduleStartCycleNotification(_userId, _fcmToken) {
+  scheduleStartCycleNotification({ userId, fcmToken, delay }) {
     throw new UnimplementedError()
   }
 
-  scheduleNextBreakNotification(_userId, _fcmToken) {
+  scheduleNextBreakNotification({ userId, fcmToken, delay }) {
     throw new UnimplementedError()
   }
 
-  scheduleNextWorkNotification(_userId, _fcmToken) {
+  scheduleNextWorkNotification({ userId, fcmToken, delay }) {
     throw new UnimplementedError()
   }
 
-  scheduleWorkIdleNotification(_userId, _fcmToken) {
+  scheduleWorkIdleNotification({ userId, fcmToken, delay }) {
     throw new UnimplementedError()
   }
 
-  scheduleBreakIdleNotification(_userId, _fcmToken) {
+  scheduleBreakIdleNotification({ userId, fcmToken, delay }) {
     throw new UnimplementedError()
   }
 
-  schedulePauseIdleNotification(_userId, _fcmToken) {
+  schedulePauseIdleNotification({ userId, fcmToken, delay }) {
     throw new UnimplementedError()
   }
 
-  scheduleWorkIdleAction(_userId, _fcmToken) {
+  scheduleInactiveNotification({ userId, fcmToken, delay }) {
     throw new UnimplementedError()
   }
 
-  scheduleBreakIdleAction(_userId, _fcmToken) {
+  scheduleWorkIdleAction({
+    userId,
+    fcmToken,
+    delay,
+    delayToInactive,
+    delayStartCycle,
+  }) {
     throw new UnimplementedError()
   }
 
-  schedulePauseIdleAction(_userId, _fcmToken) {
+  scheduleBreakIdleAction({
+    userId,
+    fcmToken,
+    delay,
+    delayToInactive,
+    delayStartCycle,
+  }) {
     throw new UnimplementedError()
   }
 
-  scheduleInativeAction(_userId, _fcmToken) {
+  schedulePauseIdleAction({
+    userId,
+    fcmToken,
+    delay,
+    delayToInactive,
+    delayStartCycle,
+  }) {
+    throw new UnimplementedError()
+  }
+
+  scheduleInactiveAction({ userId, fcmToken, delay, delayStartCycle }) {
     throw new UnimplementedError()
   }
 }
