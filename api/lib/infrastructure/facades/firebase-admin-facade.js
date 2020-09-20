@@ -18,7 +18,7 @@ class FirebaseAdminFacade {
     return decodedToken.uid
   }
 
-  async send(title, body, category, fcmToken) {
+  async send({ title, body, category, fcmToken }) {
     console.log(
       '[FIREBASE_ADMIN_FACADE] - sending message: ' +
         category +
