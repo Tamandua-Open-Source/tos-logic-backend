@@ -1,16 +1,6 @@
 import { UnimplementedError } from '../../core/errors'
 
 class IStateMachineFacade {
-  constructor() {
-    this.inactiveState = 'INACTIVE'
-    this.workState = 'WORK'
-    this.breakState = 'BREAK'
-    this.pauseState = 'PAUSE'
-    this.workIdleState = 'WORK_IDLE'
-    this.breakIdleState = 'BREAK_IDLE'
-    this.pauseIdleState = 'PAUSE_IDLE'
-  }
-
   canStartFrom(_currentState) {
     throw new UnimplementedError()
   }
@@ -35,27 +25,43 @@ class IStateMachineFacade {
     throw new UnimplementedError()
   }
 
-  onStart() {
+  onStart({ userId }) {
     throw new UnimplementedError()
   }
 
-  onFinish() {
+  onFinish({ userId }) {
     throw new UnimplementedError()
   }
 
-  onWork() {
+  onWork({ userId, elapsedDuration }) {
     throw new UnimplementedError()
   }
 
-  onBreak() {
+  onBreak({ userId, elapsedDuration }) {
     throw new UnimplementedError()
   }
 
-  onPause() {
+  onPause({ userId }) {
     throw new UnimplementedError()
   }
 
-  onResume(_lastState) {
+  onResume({ userId }) {
+    throw new UnimplementedError()
+  }
+
+  onWorkIdle({ userId }) {
+    throw new UnimplementedError()
+  }
+
+  onBreakIdle({ userId }) {
+    throw new UnimplementedError()
+  }
+
+  onPauseIdle({ userId }) {
+    throw new UnimplementedError()
+  }
+
+  onInactive({ userId }) {
     throw new UnimplementedError()
   }
 }

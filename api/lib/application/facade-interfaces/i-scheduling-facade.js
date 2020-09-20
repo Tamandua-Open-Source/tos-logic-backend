@@ -1,51 +1,27 @@
 import { UnimplementedError } from '../../core/errors'
 
 class ISchedulingFacade {
-  removeAllScheduledPushNotifications(_userId) {
+  assignStateMachineFacade({ stateMachineFacade }) {
     throw new UnimplementedError()
   }
 
-  removeAllScheduledIdleSystemActions(_userId) {
+  buildJobId(_userId) {
     throw new UnimplementedError()
   }
 
-  scheduleStartCycleNotification(_userId, _fcmToken) {
+  removeJobsOnNotificationQueue({ userId }) {
     throw new UnimplementedError()
   }
 
-  scheduleNextBreakNotification(_userId, _fcmToken) {
+  removeJobsOnStateQueue({ userId }) {
     throw new UnimplementedError()
   }
 
-  scheduleNextWorkNotification(_userId, _fcmToken) {
+  scheduleNotification({ userId, title, body, category, fcmToken, delay }) {
     throw new UnimplementedError()
   }
 
-  scheduleWorkIdleNotification(_userId, _fcmToken) {
-    throw new UnimplementedError()
-  }
-
-  scheduleBreakIdleNotification(_userId, _fcmToken) {
-    throw new UnimplementedError()
-  }
-
-  schedulePauseIdleNotification(_userId, _fcmToken) {
-    throw new UnimplementedError()
-  }
-
-  scheduleWorkIdleAction(_userId, _fcmToken) {
-    throw new UnimplementedError()
-  }
-
-  scheduleBreakIdleAction(_userId, _fcmToken) {
-    throw new UnimplementedError()
-  }
-
-  schedulePauseIdleAction(_userId, _fcmToken) {
-    throw new UnimplementedError()
-  }
-
-  scheduleInativeAction(_userId, _fcmToken) {
+  scheduleState({ userId, state, delay }) {
     throw new UnimplementedError()
   }
 }

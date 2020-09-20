@@ -6,235 +6,151 @@ import { v4 as uuidv4 } from 'uuid'
 dotenv.config()
 
 class SchedulingFacade extends ISchedulingFacade {
-  constructor({ firebaseAdminFacade, idleSystemFacade }) {
+  constructor({ firebaseAdminFacade, stateMachineFacade }) {
     super()
     this.firebaseAdminFacade = firebaseAdminFacade
-    this.idleSystemFacade = idleSystemFacade
+    this.stateMachineFacade = stateMachineFacade
 
     this.notificationQueue = new Queue('notification', {
       redis: process.env.REDIS_URL ?? undefined,
     })
 
-    this.idleSystemQueue = new Queue('idleSystem', {
+    this.stateQueue = new Queue('state', {
       redis: process.env.REDIS_URL ?? undefined,
     })
 
     this.notificationQueue.process(async (job) => {
       console.log(
-        '[BULL - notificationQueue] executing job ' +
+        '[SCHEDULING_FACADE](notificationQueue) - Processing Job - ' +
+          'Id:' +
           job.id +
-          ' -> ' +
-          job.data.title
+          ' | Title: ' +
+          job.data.title +
+          ' | Body: ' +
+          job.data.body
       )
-      return await this.firebaseAdminFacade.send(
-        job.data.title,
-        job.data.body,
-        job.data.category,
-        job.data.fcmToken
-      )
+
+      return await this.firebaseAdminFacade.send({
+        title: job.data.title,
+        body: job.data.body,
+        category: job.data.category,
+        fcmToken: job.data.fcmToken,
+      })
     })
 
-    this.idleSystemQueue.process(async (job) => {
+    this.stateQueue.process(async (job) => {
       console.log(
-        '[BULL - idleSystemQueue] executing job ' +
+        '[SCHEDULING_FACADE](stateQueue) - Processing Job - ' +
+          'Id: ' +
           job.id +
-          ' -> ' +
-          job.data.description
+          ' | State: ' +
+          job.data.state
+      )
+
+      switch (job.data.state) {
+        case this.stateMachineFacade.workIdleState:
+          return this.stateMachineFacade.onWorkIdle({
+            userId: job.data.userId,
+          })
+        case this.stateMachineFacade.breakIdleState:
+          return this.stateMachineFacade.onBreakIdle({
+            userId: job.data.userId,
+          })
+        case this.stateMachineFacade.pauseIdleState:
+          return this.stateMachineFacade.onPauseIdle({
+            userId: job.data.userId,
+          })
+        case this.stateMachineFacade.inactiveState:
+          return this.stateMachineFacade.onInactive({
+            userId: job.data.userId,
+          })
+        default:
+          console.log('Erro aqui')
+      }
+    })
+  }
+
+  assignStateMachineFacade({ stateMachineFacade }) {
+    this.stateMachineFacade = stateMachineFacade
+  }
+
+  buildJobId(userId) {
+    return userId + '-' + uuidv4()
+  }
+
+  async removeJobsOnNotificationQueue({ userId }) {
+    const pattern = userId + '*'
+
+    await this.notificationQueue.removeJobs(pattern).then(async function () {
+      console.log(
+        '[SCHEDULING_FACADE](notificationQueue) - Removing scheduled jobs for userId: ' +
+          userId
       )
       return
     })
   }
 
-  getUniqueId(userId) {
-    return userId + '-' + uuidv4()
-  }
-
-  removeAllScheduledPushNotifications(userId) {
+  async removeJobsOnStateQueue({ userId }) {
     const pattern = userId + '*'
-    this.notificationQueue.removeJobs(pattern).then(function () {
-      console.log('[BULL - notificationQueue] removing jobs for ' + userId)
+
+    await this.stateQueue.removeJobs(pattern).then(async function () {
+      console.log(
+        '[SCHEDULING_FACADE](stateQueue) - Removing scheduled jobs for userId: ' +
+          userId
+      )
+      return
     })
   }
 
-  removeAllScheduledIdleSystemActions(userId) {
-    const pattern = userId + '*'
-    this.idleSystemQueue.removeJobs(pattern).then(function () {
-      console.log('[BULL - idleSystemQueue] removing jobs for ' + userId)
-    })
-  }
-
-  scheduleStartCycleNotification(userId, fcmToken) {
+  scheduleNotification({ userId, title, body, category, fcmToken, delay }) {
     const data = {
-      userId: userId,
-      title: '🥰 Bom dia flor do dia',
-      body: 'Vamos começar o seu ciclo de trabalho de hoje? ❤️',
-      fcmToken: fcmToken,
-      category: 'UN_START_CATEGORY',
+      userId,
+      title,
+      body,
+      fcmToken,
+      category,
     }
 
     const options = {
-      delay: 5000,
+      delay: delay,
       attempts: 2,
-      jobId: this.getUniqueId(userId),
+      jobId: this.buildJobId(userId),
     }
 
     this.notificationQueue.add(data, options)
+
+    console.log(
+      '[SCHEDULING_FACADE](notificationQueue) - job scheduled - ' +
+        'Id: ' +
+        options.jobId +
+        ' | Title: ' +
+        data.title +
+        ' | Body: ' +
+        data.body
+    )
   }
 
-  scheduleNextBreakNotification(userId, fcmToken) {
+  scheduleState({ userId, state, delay }) {
     const data = {
-      userId: userId,
-      title: '🚨 Policia da ergonomia',
-      body: 'Você está sendo conduzido a tirar um break. 💔',
-      fcmToken: fcmToken,
-      category: 'UN_BREAK_START_CATEGORY',
+      userId,
+      state,
     }
 
     const options = {
-      delay: 5000,
+      delay: delay,
       attempts: 2,
-      jobId: this.getUniqueId(userId),
+      jobId: this.buildJobId(userId),
     }
 
-    this.notificationQueue.add(data, options)
-  }
+    this.stateQueue.add(data, options)
 
-  scheduleNextWorkNotification(userId, fcmToken) {
-    const data = {
-      userId: userId,
-      title: '💼 Seu advogado conseguiu!',
-      body: 'Habeas corpus liberado, pode voltar a trabalhar. 🤎',
-      fcmToken: fcmToken,
-      category: 'UN_BREAK_END_CATEGORY',
-    }
-
-    const options = {
-      delay: 5000,
-      attempts: 2,
-      jobId: this.getUniqueId(userId),
-    }
-
-    this.notificationQueue.add(data, options)
-  }
-
-  scheduleWorkIdleNotification(userId, fcmToken) {
-    const data = {
-      userId: userId,
-      title: '⚠️⚠️⚠️',
-      body: 'Você esqueceu de tirar um descanso!!! 🧡',
-      fcmToken: fcmToken,
-      category: 'UN_BREAK_START_CATEGORY',
-    }
-
-    const options = {
-      delay: 15000,
-      attempts: 2,
-      jobId: this.getUniqueId(userId),
-    }
-
-    this.notificationQueue.add(data, options)
-  }
-
-  scheduleBreakIdleNotification(userId, fcmToken) {
-    const data = {
-      userId: userId,
-      title: '⚠️⚠️⚠️',
-      body: 'Você esqueceu de voltar a trabalhar!!! 💜',
-      fcmToken: fcmToken,
-      category: 'UN_BREAK_END_CATEGORY',
-    }
-
-    const options = {
-      delay: 15000,
-      attempts: 2,
-      jobId: this.getUniqueId(userId),
-    }
-
-    this.notificationQueue.add(data, options)
-  }
-
-  schedulePauseIdleNotification(userId, fcmToken) {
-    const data = {
-      userId: userId,
-      title: '⚠️⚠️⚠️',
-      body: 'Olá ' + userId + ', você esqueceu o timer pausado!!! 💚',
-      fcmToken: fcmToken,
-      category: 'UN_DEFAULT_CATEGORY',
-    }
-
-    const options = {
-      delay: 15000,
-      attempts: 2,
-      jobId: this.getUniqueId(userId),
-    }
-
-    this.notificationQueue.add(data, options)
-  }
-
-  scheduleWorkIdleAction(userId, fcmToken) {
-    this.scheduleWorkIdleNotification(userId, fcmToken)
-
-    const data = {
-      userId: userId,
-      description: 'moved_to_work_idle',
-    }
-
-    const options = {
-      delay: 15000,
-      attempts: 2,
-      jobId: this.getUniqueId(userId),
-    }
-
-    this.idleSystemQueue.add(data, options)
-  }
-
-  scheduleBreakIdleAction(userId, fcmToken) {
-    this.scheduleBreakIdleNotification(userId, fcmToken)
-
-    const data = {
-      userId: userId,
-      description: 'moved_to_break_idle',
-    }
-
-    const options = {
-      delay: 15000,
-      attempts: 2,
-      jobId: this.getUniqueId(userId),
-    }
-
-    this.idleSystemQueue.add(data, options)
-  }
-
-  schedulePauseIdleAction(userId, fcmToken) {
-    this.schedulePauseIdleNotification(userId, fcmToken)
-
-    const data = {
-      userId: userId,
-      description: 'moved_to_pause_idle',
-    }
-
-    const options = {
-      delay: 15000,
-      attempts: 2,
-      jobId: this.getUniqueId(userId),
-    }
-
-    this.idleSystemQueue.add(data, options)
-  }
-
-  scheduleInativeAction(userId, fcmToken) {
-    const data = {
-      userId: userId,
-      description: 'moved_to_inactive',
-    }
-
-    const options = {
-      delay: 15000,
-      attempts: 2,
-      jobId: this.getUniqueId(userId),
-    }
-
-    this.idleSystemQueue.add(data, options)
+    console.log(
+      '[SCHEDULING_FACADE](stateQueue) - job scheduled -' +
+        'Id: ' +
+        options.jobId +
+        ' | State: ' +
+        data.state
+    )
   }
 }
 
