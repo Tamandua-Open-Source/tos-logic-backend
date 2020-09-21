@@ -15,23 +15,6 @@ class StateMachineFacade extends IStateMachineFacade {
     this.pauseIdleState = 'PAUSE_IDLE'
   }
 
-  getMillisecondsToNextStartCycleDate({ startDate }) {
-    const time = new Date(startDate)
-    const tomorrowDate = new Date()
-    tomorrowDate.setUTCDate(tomorrowDate.getUTCDate() + 1)
-
-    const startCycleDate = new Date()
-    startCycleDate.setUTCFullYear(tomorrowDate.getUTCFullYear())
-    startCycleDate.setUTCMonth(tomorrowDate.getUTCMonth())
-    startCycleDate.setUTCDate(tomorrowDate.getUTCDate())
-    startCycleDate.setUTCHours(time.getUTCHours())
-    startCycleDate.setUTCMinutes(time.getUTCMinutes())
-    startCycleDate.setUTCSeconds(time.getUTCSeconds())
-    startCycleDate.setUTCMilliseconds(time.getUTCMilliseconds())
-
-    return startCycleDate.getTime() - new Date().getTime()
-  }
-
   canStartFrom(currentState) {
     return [this.inactiveState].includes(currentState)
   }
@@ -424,6 +407,96 @@ class StateMachineFacade extends IStateMachineFacade {
 
     this.onFinish({ userId })
   }
+
+  async onStatus({ userId }) {
+    const preferences = await this.userRepository.getUserPreferences(userId)
+
+    const nowTimestamp = new Date().getTime()
+    const lastBreakTs = new Date(preferences.lastBreakStartTime).getTime()
+    const lastWorkTs = new Date(preferences.lastWorkStartTime).getTime()
+    const lastPauseTs = new Date(preferences.lastPauseStartTime).getTime()
+
+    if ([this.inactiveState].includes(preferences.currentState)) {
+      //calcular time to nextCycle
+      return {
+        currentState: preferences.currentState,
+        millisecondsToStartCycle: 0,
+      }
+    }
+
+    if (
+      [this.breakIdleState, this.workIdleState, this.pauseIdleState].includes(
+        preferences.currentState
+      )
+    ) {
+      return {
+        currentState: preferences.currentState,
+        millisecondsToInactive: 0,
+      }
+    }
+
+    if ([this.workState].includes(preferences.currentState)) {
+      return {
+        currentState: preferences.currentState,
+        millisecondsToNextBreak: 0,
+        millisecondsToWorkIdle: 0,
+      }
+    }
+
+    if ([this.breakState].includes(preferences.currentState)) {
+      return {
+        currentState: preferences.currentState,
+        millisecondsToNextBreak: 0,
+        millisecondsToBreakIdle: 0,
+      }
+    }
+
+    if ([this.pauseState].includes(preferences.currentState)) {
+      return {
+        currentState: preferences.currentState,
+        millisecondsToPauseIdle: 0,
+      }
+    }
+  }
+
+  getMillisecondsToNextStartCycleDate({ startDate }) {
+    const time = new Date(startDate)
+    const tomorrowDate = new Date()
+    tomorrowDate.setUTCDate(tomorrowDate.getUTCDate() + 1)
+
+    const startCycleDate = new Date()
+    startCycleDate.setUTCFullYear(tomorrowDate.getUTCFullYear())
+    startCycleDate.setUTCMonth(tomorrowDate.getUTCMonth())
+    startCycleDate.setUTCDate(tomorrowDate.getUTCDate())
+    startCycleDate.setUTCHours(time.getUTCHours())
+    startCycleDate.setUTCMinutes(time.getUTCMinutes())
+    startCycleDate.setUTCSeconds(time.getUTCSeconds())
+    startCycleDate.setUTCMilliseconds(time.getUTCMilliseconds())
+
+    return startCycleDate.getTime() - new Date().getTime()
+  }
 }
 
 export default StateMachineFacade
+
+// "id": -1,
+// "UserId": "vN7Kodp84zQg1KDTPd3IfwvaF1r1",
+// "UserPreferenceTimeTypeId": 2,
+// "UserPreferenceStartPeriodId": 1,
+// "fcmToken": "fB_deuQbPkTOsFUPrb_I45:APA91bHP6kNOOahgukAMDSMF9ppuOD832iN0204CJG_COQHC9HQW5cqTlR9zxPLtQXYXdragbmnmqI8rE2O9KJSN-vpN_AWyC5dv78f7VwKPCPkRRV97f0xMie8DLIP0ak0nNUqoRCu2",
+// "startTime": null,
+// "breakDuration": 5000,
+// "breakLimitDuration": 15000,
+// "breakIdleLimitDuration": 10000,
+// "lastBreakStartTime": "2020-09-21T13:38:03.942Z",
+// "workDuration": 5000,
+// "workLimitDuration": 15000,
+// "workIdleLimitDuration": 10000,
+// "lastWorkStartTime": "2020-09-21T13:38:03.942Z",
+// "pauseLimitDuration": 15000,
+// "pauseIdleLimitDuration": 10000,
+// "lastPauseStartTime": "2020-09-21T13:38:03.942Z",
+// "currentState": "INACTIVE",
+// "lastState": "INACTIVE",
+// "createdAt": "2020-09-21T13:38:03.942Z",
+// "updatedAt": "2020-09-21T13:38:03.942Z",
