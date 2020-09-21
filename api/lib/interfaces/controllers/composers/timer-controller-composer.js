@@ -11,6 +11,7 @@ import {
   BreakTimerUseCase,
   PauseTimerUseCase,
   ResumeTimerUseCase,
+  StatusTimerUseCase,
 } from '../../../application/use-cases/timer'
 
 class TimerControllerComposer {
@@ -33,6 +34,7 @@ class TimerControllerComposer {
     const breakTimerUseCase = new BreakTimerUseCase({ stateMachineFacade })
     const pauseTimerUseCase = new PauseTimerUseCase({ stateMachineFacade })
     const resumeTimerUseCase = new ResumeTimerUseCase({ stateMachineFacade })
+    const statusTimerUseCase = new StatusTimerUseCase({ stateMachineFacade })
 
     return new TimerController({
       startTimerUseCase,
@@ -41,6 +43,7 @@ class TimerControllerComposer {
       breakTimerUseCase,
       pauseTimerUseCase,
       resumeTimerUseCase,
+      statusTimerUseCase,
     })
   }
 }
