@@ -45,4 +45,10 @@ router.post(
   ExpressRouterAdapter.adapt((req) => timerController.resumeTimer(req))
 )
 
+router.get(
+  '/status',
+  ExpressMiddlewareAdapter.adapt((req) => authMiddleware.verifyToken(req)),
+  ExpressRouterAdapter.adapt((req) => timerController.statusTimer(req))
+)
+
 export default router

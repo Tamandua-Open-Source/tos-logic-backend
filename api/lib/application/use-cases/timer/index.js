@@ -4,6 +4,7 @@ import WorkTimerUseCase from './work-timer-use-case'
 import BreakTimerUseCase from './break-timer-use-case'
 import PauseTimerUseCase from './pause-timer-use-case'
 import ResumeTimerUseCase from './resume-timer-use-case'
+import StatusTimerUseCase from './status-timer-use-case'
 
 export {
   StartTimerUseCase,
@@ -12,4 +13,5 @@ export {
   BreakTimerUseCase,
   PauseTimerUseCase,
   ResumeTimerUseCase,
+  StatusTimerUseCase,
 }
