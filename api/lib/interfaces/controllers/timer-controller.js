@@ -136,6 +136,33 @@ class TimerController {
       return HttpResponse.serverError()
     }
   }
+
+  async statusTimer(req) {
+    const { userId } = req.props
+
+    if (!userId) {
+      return HttpResponse.serverError()
+    }
+
+    try {
+      const { statusTimerUseCase } = this.useCases
+      const status = await statusTimerUseCase.execute(userId)
+
+      if (status) {
+        return HttpResponse.ok({
+          message: 'Timer status retrieved successfully',
+          status,
+        })
+      } else {
+        return HttpResponse.ok({
+          message: 'Timer status cannot be retrieved',
+        })
+      }
+    } catch (error) {
+      console.log(error)
+      return HttpResponse.serverError()
+    }
+  }
 }
 
 export default TimerController
