@@ -446,7 +446,7 @@ class StateMachineFacade extends IStateMachineFacade {
     if ([this.breakState].includes(preferences.currentState)) {
       return {
         currentState: preferences.currentState,
-        millisecondsToNextBreak: 0,
+        millisecondsToNextWork: 0,
         millisecondsToBreakIdle: 0,
       }
     }
@@ -478,25 +478,3 @@ class StateMachineFacade extends IStateMachineFacade {
 }
 
 export default StateMachineFacade
-
-// "id": -1,
-// "UserId": "vN7Kodp84zQg1KDTPd3IfwvaF1r1",
-// "UserPreferenceTimeTypeId": 2,
-// "UserPreferenceStartPeriodId": 1,
-// "fcmToken": "fB_deuQbPkTOsFUPrb_I45:APA91bHP6kNOOahgukAMDSMF9ppuOD832iN0204CJG_COQHC9HQW5cqTlR9zxPLtQXYXdragbmnmqI8rE2O9KJSN-vpN_AWyC5dv78f7VwKPCPkRRV97f0xMie8DLIP0ak0nNUqoRCu2",
-// "startTime": null,
-// "breakDuration": 5000,
-// "breakLimitDuration": 15000,
-// "breakIdleLimitDuration": 10000,
-// "lastBreakStartTime": "2020-09-21T13:38:03.942Z",
-// "workDuration": 5000,
-// "workLimitDuration": 15000,
-// "workIdleLimitDuration": 10000,
-// "lastWorkStartTime": "2020-09-21T13:38:03.942Z",
-// "pauseLimitDuration": 15000,
-// "pauseIdleLimitDuration": 10000,
-// "lastPauseStartTime": "2020-09-21T13:38:03.942Z",
-// "currentState": "INACTIVE",
-// "lastState": "INACTIVE",
-// "createdAt": "2020-09-21T13:38:03.942Z",
-// "updatedAt": "2020-09-21T13:38:03.942Z",
