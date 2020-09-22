@@ -124,7 +124,7 @@ export default {
     '/api/timer/finish': {
       post: {
         tags: ['Timer'],
-        summary: 'Request INACTIVE state on timer',
+        summary: 'Request timer to finish',
         parameters: [
           {
             in: 'header',
@@ -168,7 +168,7 @@ export default {
     '/api/timer/work': {
       post: {
         tags: ['Timer'],
-        summary: 'Request WORK state on timer',
+        summary: 'Request timer to work',
         parameters: [
           {
             in: 'header',
@@ -212,7 +212,7 @@ export default {
     '/api/timer/break': {
       post: {
         tags: ['Timer'],
-        summary: 'Request BREAK state on timer',
+        summary: 'Request timer to break',
         parameters: [
           {
             in: 'header',
@@ -256,7 +256,7 @@ export default {
     '/api/timer/pause': {
       post: {
         tags: ['Timer'],
-        summary: 'Request WORK state on timer',
+        summary: 'Request timer to pause',
         parameters: [
           {
             in: 'header',
@@ -300,7 +300,7 @@ export default {
     '/api/timer/resume': {
       post: {
         tags: ['Timer'],
-        summary: 'Request WORK state on timer',
+        summary: 'Request timer to resume',
         parameters: [
           {
             in: 'header',
