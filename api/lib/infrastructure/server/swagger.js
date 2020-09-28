@@ -38,40 +38,8 @@ export default {
           200: {
             description: 'OK',
             schema: {
-              properties: {
-                message: {
-                  type: 'string',
-                },
-                status: {
-                  type: 'object',
-                  properties: {
-                    currentState: {
-                      type: 'string',
-                    },
-                    millisecondsToStartCycle: {
-                      type: 'integer',
-                    },
-                    millisecondsToNextBreak: {
-                      type: 'integer',
-                    },
-                    millisecondsToNextWork: {
-                      type: 'integer',
-                    },
-                    millisecondsToBreakIdle: {
-                      type: 'integer',
-                    },
-                    millisecondsToWorkIdle: {
-                      type: 'integer',
-                    },
-                    millisecondsToPauseIdle: {
-                      type: 'integer',
-                    },
-                    millisecondsToInactive: {
-                      type: 'integer',
-                    },
-                  },
-                },
-              },
+              type: 'object',
+              $ref: '#/definitions/Timer Response',
             },
           },
         },
@@ -97,25 +65,8 @@ export default {
           200: {
             description: 'OK',
             schema: {
-              properties: {
-                message: {
-                  type: 'string',
-                },
-                state: {
-                  type: 'object',
-                  properties: {
-                    from: {
-                      type: 'string',
-                    },
-                    to: {
-                      type: 'string',
-                    },
-                    millisecondsToNextBreak: {
-                      type: 'integer',
-                    },
-                  },
-                },
-              },
+              type: 'object',
+              $ref: '#/definitions/Timer Response',
             },
           },
         },
@@ -141,25 +92,8 @@ export default {
           200: {
             description: 'OK',
             schema: {
-              properties: {
-                message: {
-                  type: 'string',
-                },
-                state: {
-                  type: 'object',
-                  properties: {
-                    from: {
-                      type: 'string',
-                    },
-                    to: {
-                      type: 'string',
-                    },
-                    millisecondsToStartCycle: {
-                      type: 'integer',
-                    },
-                  },
-                },
-              },
+              type: 'object',
+              $ref: '#/definitions/Timer Response',
             },
           },
         },
@@ -185,25 +119,8 @@ export default {
           200: {
             description: 'OK',
             schema: {
-              properties: {
-                message: {
-                  type: 'string',
-                },
-                state: {
-                  type: 'object',
-                  properties: {
-                    from: {
-                      type: 'string',
-                    },
-                    to: {
-                      type: 'string',
-                    },
-                    millisecondsToNextBreak: {
-                      type: 'integer',
-                    },
-                  },
-                },
-              },
+              type: 'object',
+              $ref: '#/definitions/Timer Response',
             },
           },
         },
@@ -229,25 +146,8 @@ export default {
           200: {
             description: 'OK',
             schema: {
-              properties: {
-                message: {
-                  type: 'string',
-                },
-                state: {
-                  type: 'object',
-                  properties: {
-                    from: {
-                      type: 'string',
-                    },
-                    to: {
-                      type: 'string',
-                    },
-                    millisecondsToNextWork: {
-                      type: 'integer',
-                    },
-                  },
-                },
-              },
+              type: 'object',
+              $ref: '#/definitions/Timer Response',
             },
           },
         },
@@ -273,25 +173,8 @@ export default {
           200: {
             description: 'OK',
             schema: {
-              properties: {
-                message: {
-                  type: 'string',
-                },
-                state: {
-                  type: 'object',
-                  properties: {
-                    from: {
-                      type: 'string',
-                    },
-                    to: {
-                      type: 'string',
-                    },
-                    millisecondsToPauseIdle: {
-                      type: 'integer',
-                    },
-                  },
-                },
-              },
+              type: 'object',
+              $ref: '#/definitions/Timer Response',
             },
           },
         },
@@ -317,28 +200,51 @@ export default {
           200: {
             description: 'OK',
             schema: {
-              properties: {
-                message: {
-                  type: 'string',
-                },
-                state: {
-                  type: 'object',
-                  properties: {
-                    from: {
-                      type: 'string',
-                    },
-                    to: {
-                      type: 'string',
-                    },
-                    millisecondsToNextBreak: {
-                      type: 'integer',
-                    },
-                    millisecondsToNextWork: {
-                      type: 'integer',
-                    },
-                  },
-                },
-              },
+              type: 'object',
+              $ref: '#/definitions/Timer Response',
+            },
+          },
+        },
+      },
+    },
+  },
+
+  definitions: {
+    'Timer Response': {
+      type: 'object',
+      properties: {
+        message: {
+          type: 'string',
+        },
+        status: {
+          type: 'object',
+          properties: {
+            lastState: {
+              type: 'string',
+            },
+            currentState: {
+              type: 'string',
+            },
+            millisecondsToStartCycle: {
+              type: 'integer',
+            },
+            millisecondsToNextBreak: {
+              type: 'integer',
+            },
+            millisecondsToNextWork: {
+              type: 'integer',
+            },
+            millisecondsToBreakIdle: {
+              type: 'integer',
+            },
+            millisecondsToWorkIdle: {
+              type: 'integer',
+            },
+            millisecondsToPauseIdle: {
+              type: 'integer',
+            },
+            millisecondsToInactive: {
+              type: 'integer',
             },
           },
         },
