@@ -83,9 +83,15 @@ class StateMachineFacade extends IStateMachineFacade {
     })
 
     return {
-      from: patchedPreferences.lastState,
-      to: patchedPreferences.currentState,
+      lastState: patchedPreferences.lastState,
+      currentState: patchedPreferences.currentState,
+      millisecondsToStartCycle: null,
       millisecondsToNextBreak: preferences.workDuration,
+      millisecondsToNextWork: null,
+      millisecondsToBreakIdle: null,
+      millisecondsToWorkIdle: null,
+      millisecondsToPauseIdle: null,
+      millisecondsToInactive: null,
     }
   }
 
@@ -123,9 +129,15 @@ class StateMachineFacade extends IStateMachineFacade {
     })
 
     return {
-      from: patchedPreferences.lastState,
-      to: patchedPreferences.currentState,
+      lastState: patchedPreferences.lastState,
+      currentState: patchedPreferences.currentState,
       millisecondsToStartCycle: delay,
+      millisecondsToNextBreak: null,
+      millisecondsToNextWork: null,
+      millisecondsToBreakIdle: null,
+      millisecondsToWorkIdle: null,
+      millisecondsToPauseIdle: null,
+      millisecondsToInactive: null,
     }
   }
 
@@ -170,10 +182,16 @@ class StateMachineFacade extends IStateMachineFacade {
     })
 
     return {
-      from: patchedPreferences.lastState,
-      to: patchedPreferences.currentState,
+      lastState: patchedPreferences.lastState,
+      currentState: patchedPreferences.currentState,
+      millisecondsToStartCycle: null,
       millisecondsToNextBreak:
         preferences.workDuration - (elapsedDuration ?? 0),
+      millisecondsToNextWork: null,
+      millisecondsToBreakIdle: null,
+      millisecondsToWorkIdle: null,
+      millisecondsToPauseIdle: null,
+      millisecondsToInactive: null,
     }
   }
 
@@ -218,10 +236,16 @@ class StateMachineFacade extends IStateMachineFacade {
     })
 
     return {
-      from: patchedPreferences.lastState,
-      to: patchedPreferences.currentState,
+      lastState: patchedPreferences.lastState,
+      currentState: patchedPreferences.currentState,
+      millisecondsToStartCycle: null,
+      millisecondsToNextBreak: null,
       millisecondsToNextWork:
         preferences.breakDuration - (elapsedDuration ?? 0),
+      millisecondsToBreakIdle: null,
+      millisecondsToWorkIdle: null,
+      millisecondsToPauseIdle: null,
+      millisecondsToInactive: null,
     }
   }
 
@@ -252,9 +276,15 @@ class StateMachineFacade extends IStateMachineFacade {
     })
 
     return {
-      from: patchedPreferences.lastState,
-      to: patchedPreferences.currentState,
+      lastState: patchedPreferences.lastState,
+      currentState: patchedPreferences.currentState,
+      millisecondsToStartCycle: null,
+      millisecondsToNextBreak: null,
+      millisecondsToNextWork: null,
+      millisecondsToBreakIdle: null,
+      millisecondsToWorkIdle: null,
       millisecondsToPauseIdle: preferences.pauseLimitDuration,
+      millisecondsToInactive: null,
     }
   }
 
@@ -416,46 +446,17 @@ class StateMachineFacade extends IStateMachineFacade {
     const lastWorkTs = new Date(preferences.lastWorkStartTime).getTime()
     const lastPauseTs = new Date(preferences.lastPauseStartTime).getTime()
 
-    if ([this.inactiveState].includes(preferences.currentState)) {
-      //calcular time to nextCycle
-      return {
-        currentState: preferences.currentState,
-        millisecondsToStartCycle: 0,
-      }
-    }
-
-    if (
-      [this.breakIdleState, this.workIdleState, this.pauseIdleState].includes(
-        preferences.currentState
-      )
-    ) {
-      return {
-        currentState: preferences.currentState,
-        millisecondsToInactive: 0,
-      }
-    }
-
-    if ([this.workState].includes(preferences.currentState)) {
-      return {
-        currentState: preferences.currentState,
-        millisecondsToNextBreak: 0,
-        millisecondsToWorkIdle: 0,
-      }
-    }
-
-    if ([this.breakState].includes(preferences.currentState)) {
-      return {
-        currentState: preferences.currentState,
-        millisecondsToNextWork: 0,
-        millisecondsToBreakIdle: 0,
-      }
-    }
-
-    if ([this.pauseState].includes(preferences.currentState)) {
-      return {
-        currentState: preferences.currentState,
-        millisecondsToPauseIdle: 0,
-      }
+    //TODO: - calculate responses
+    return {
+      lastState: preferences.lastState,
+      currentState: preferences.currentState,
+      millisecondsToStartCycle: null,
+      millisecondsToNextBreak: null,
+      millisecondsToNextWork: null,
+      millisecondsToBreakIdle: null,
+      millisecondsToWorkIdle: null,
+      millisecondsToPauseIdle: null,
+      millisecondsToInactive: null,
     }
   }
 
