@@ -1,10 +1,15 @@
 import IStateMachineFacade from '../../application/facade-interfaces/i-state-machine-facade'
 
 class StateMachineFacade extends IStateMachineFacade {
-  constructor({ userRepository, schedulingFacade }) {
+  constructor({
+    timerPreferencesRepository,
+    schedulingFacade,
+    userDataFacade,
+  }) {
     super()
-    this.userRepository = userRepository
+    this.timerPreferencesRepository = timerPreferencesRepository
     this.schedulingFacade = schedulingFacade
+    this.userDataFacade = userDataFacade
 
     this.inactiveState = 'INACTIVE'
     this.workState = 'WORK'
@@ -47,13 +52,17 @@ class StateMachineFacade extends IStateMachineFacade {
   }
 
   async onStart({ userId }) {
-    const preferences = await this.userRepository.getUserPreferences(userId)
+    const preferences = await this.timerPreferencesRepository.getTimerPreferences(
+      userId
+    )
+
+    const userData = await this.userDataFacade.getUserData(userId)
 
     if (!this.canStartFrom(preferences.currentState)) {
       return null
     }
 
-    const patchedPreferences = await this.userRepository.patchUserPreferences(
+    const patchedPreferences = await this.timerPreferencesRepository.patchTimerPreferences(
       userId,
       {
         lastWorkStartTime: new Date(),
@@ -71,7 +80,7 @@ class StateMachineFacade extends IStateMachineFacade {
       title: '🚨 Policia da ergonomia',
       body: 'Você está sendo conduzido a tirar um break. 💔',
       category: 'UN_BREAK_START_CATEGORY',
-      fcmToken: preferences.fcmToken,
+      fcmToken: userData.fcmToken,
       delay: preferences.workDuration,
     })
 
@@ -96,13 +105,17 @@ class StateMachineFacade extends IStateMachineFacade {
   }
 
   async onFinish({ userId }) {
-    const preferences = await this.userRepository.getUserPreferences(userId)
+    const preferences = await this.timerPreferencesRepository.getTimerPreferences(
+      userId
+    )
+
+    const userData = await this.userDataFacade.getUserData(userId)
 
     if (!this.canFinishFrom(preferences.currentState)) {
       return null
     }
 
-    const patchedPreferences = await this.userRepository.patchUserPreferences(
+    const patchedPreferences = await this.timerPreferencesRepository.patchTimerPreferences(
       userId,
       {
         lastState: preferences.currentState,
@@ -114,8 +127,7 @@ class StateMachineFacade extends IStateMachineFacade {
     await this.schedulingFacade.removeJobsOnStateQueue({ userId })
 
     const delay = this.getMillisecondsToNextStartCycleDate({
-      startDate:
-        preferences.startTime ?? preferences.UserPreferenceStartPeriod.startsAt,
+      startDate: preferences.startTime,
     })
 
     //START_CYCLE
@@ -124,7 +136,7 @@ class StateMachineFacade extends IStateMachineFacade {
       title: '🥰 Bom dia flor do dia',
       body: 'Vamos começar o seu ciclo de trabalho de hoje? ❤️',
       category: 'UN_START_CATEGORY',
-      fcmToken: preferences.fcmToken,
+      fcmToken: userData.fcmToken,
       delay: 5000 ?? delay, //DEBUG: Retirar o '?? delay' para iniciar no próximo dia
     })
 
@@ -142,7 +154,11 @@ class StateMachineFacade extends IStateMachineFacade {
   }
 
   async onWork({ userId, elapsedDuration }) {
-    const preferences = await this.userRepository.getUserPreferences(userId)
+    const preferences = await this.timerPreferencesRepository.getTimerPreferences(
+      userId
+    )
+
+    const userData = await this.userDataFacade.getUserData(userId)
 
     console.log('onWork', elapsedDuration)
 
@@ -152,7 +168,7 @@ class StateMachineFacade extends IStateMachineFacade {
       }
     }
 
-    const patchedPreferences = await this.userRepository.patchUserPreferences(
+    const patchedPreferences = await this.timerPreferencesRepository.patchTimerPreferences(
       userId,
       {
         lastWorkStartTime: !elapsedDuration ? new Date() : undefined,
@@ -170,7 +186,7 @@ class StateMachineFacade extends IStateMachineFacade {
       title: '🚨 Policia da ergonomia',
       body: 'Você está sendo conduzido a tirar um break. 💔',
       category: 'UN_BREAK_START_CATEGORY',
-      fcmToken: preferences.fcmToken,
+      fcmToken: userData.fcmToken,
       delay: preferences.workDuration - (elapsedDuration ?? 0),
     })
 
@@ -196,9 +212,11 @@ class StateMachineFacade extends IStateMachineFacade {
   }
 
   async onBreak({ userId, elapsedDuration }) {
-    const preferences = await this.userRepository.getUserPreferences(userId)
+    const preferences = await this.timerPreferencesRepository.getTimerPreferences(
+      userId
+    )
 
-    console.log('onBreak', elapsedDuration)
+    const userData = await this.userDataFacade.getUserData(userId)
 
     if (!elapsedDuration) {
       if (!this.canBreakFrom(preferences.currentState)) {
@@ -206,7 +224,7 @@ class StateMachineFacade extends IStateMachineFacade {
       }
     }
 
-    const patchedPreferences = await this.userRepository.patchUserPreferences(
+    const patchedPreferences = await this.timerPreferencesRepository.patchTimerPreferences(
       userId,
       {
         lastBreakStartTime: !elapsedDuration ? new Date() : undefined,
@@ -224,7 +242,7 @@ class StateMachineFacade extends IStateMachineFacade {
       title: '💼 Seu advogado conseguiu!',
       body: 'Habeas corpus liberado, pode voltar a trabalhar. 🤎',
       category: 'UN_BREAK_END_CATEGORY',
-      fcmToken: preferences.fcmToken,
+      fcmToken: userData.fcmToken,
       delay: preferences.breakDuration - (elapsedDuration ?? 0),
     })
 
@@ -250,13 +268,15 @@ class StateMachineFacade extends IStateMachineFacade {
   }
 
   async onPause({ userId }) {
-    const preferences = await this.userRepository.getUserPreferences(userId)
+    const preferences = await this.timerPreferencesRepository.getTimerPreferences(
+      userId
+    )
 
     if (!this.canPauseFrom(preferences.currentState)) {
       return null
     }
 
-    const patchedPreferences = await this.userRepository.patchUserPreferences(
+    const patchedPreferences = await this.timerPreferencesRepository.patchTimerPreferences(
       userId,
       {
         lastPauseStartTime: new Date(),
@@ -289,7 +309,9 @@ class StateMachineFacade extends IStateMachineFacade {
   }
 
   async onResume({ userId }) {
-    const preferences = await this.userRepository.getUserPreferences(userId)
+    const preferences = await this.timerPreferencesRepository.getTimerPreferences(
+      userId
+    )
 
     if (!this.canResumeFrom(preferences.currentState)) {
       return null
@@ -319,9 +341,13 @@ class StateMachineFacade extends IStateMachineFacade {
   }
 
   async onWorkIdle({ userId }) {
-    const preferences = await this.userRepository.getUserPreferences(userId)
+    const preferences = await this.timerPreferencesRepository.getTimerPreferences(
+      userId
+    )
 
-    const patchedPreferences = await this.userRepository.patchUserPreferences(
+    const userData = await this.userDataFacade.getUserData(userId)
+
+    const patchedPreferences = await this.timerPreferencesRepository.patchTimerPreferences(
       userId,
       {
         currentState: this.workIdleState,
@@ -337,7 +363,7 @@ class StateMachineFacade extends IStateMachineFacade {
       title: '⚠️⚠️⚠️',
       body: 'Você esqueceu de tirar um descanso!!! 🧡',
       category: 'UN_BREAK_START_CATEGORY',
-      fcmToken: preferences.fcmToken,
+      fcmToken: userData.fcmToken,
       delay: 0,
     })
 
@@ -350,9 +376,13 @@ class StateMachineFacade extends IStateMachineFacade {
   }
 
   async onBreakIdle({ userId }) {
-    const preferences = await this.userRepository.getUserPreferences(userId)
+    const preferences = await this.timerPreferencesRepository.getTimerPreferences(
+      userId
+    )
 
-    const patchedPreferences = await this.userRepository.patchUserPreferences(
+    const userData = await this.userDataFacade.getUserData(userId)
+
+    const patchedPreferences = await this.timerPreferencesRepository.patchTimerPreferences(
       userId,
       {
         currentState: this.breakIdleState,
@@ -368,7 +398,7 @@ class StateMachineFacade extends IStateMachineFacade {
       title: '⚠️⚠️⚠️',
       body: 'Você esqueceu de voltar a trabalhar!!! 💜',
       category: 'UN_BREAK_END_CATEGORY',
-      fcmToken: preferences.fcmToken,
+      fcmToken: userData.fcmToken,
       delay: 0,
     })
 
@@ -381,9 +411,13 @@ class StateMachineFacade extends IStateMachineFacade {
   }
 
   async onPauseIdle({ userId }) {
-    const preferences = await this.userRepository.getUserPreferences(userId)
+    const preferences = await this.timerPreferencesRepository.getTimerPreferences(
+      userId
+    )
 
-    const patchedPreferences = await this.userRepository.patchUserPreferences(
+    const userData = await this.userDataFacade.getUserData(userId)
+
+    const patchedPreferences = await this.timerPreferencesRepository.patchTimerPreferences(
       userId,
       {
         currentState: this.pauseIdleState,
@@ -399,7 +433,7 @@ class StateMachineFacade extends IStateMachineFacade {
       title: '⚠️⚠️⚠️',
       body: 'Você esqueceu o timer pausado!!! 💚',
       category: 'UN_DEFAULT_CATEGORY',
-      fcmToken: preferences.fcmToken,
+      fcmToken: userData.fcmToken,
       delay: 0,
     })
 
@@ -412,9 +446,13 @@ class StateMachineFacade extends IStateMachineFacade {
   }
 
   async onInactive({ userId }) {
-    const preferences = await this.userRepository.getUserPreferences(userId)
+    const preferences = await this.timerPreferencesRepository.getTimerPreferences(
+      userId
+    )
 
-    const patchedPreferences = await this.userRepository.patchUserPreferences(
+    const userData = await this.userDataFacade.getUserData(userId)
+
+    const patchedPreferences = await this.timerPreferencesRepository.patchTimerPreferences(
       userId,
       {
         lastState: preferences.currentState,
@@ -431,7 +469,7 @@ class StateMachineFacade extends IStateMachineFacade {
       title: '🚫🚫🚫',
       body: 'Você me esqueceu mesmo né. Até amanhã então...',
       category: 'UN_DEFAULT_CATEGORY',
-      fcmToken: preferences.fcmToken,
+      fcmToken: userData.fcmToken,
       delay: 0,
     })
 
@@ -439,7 +477,11 @@ class StateMachineFacade extends IStateMachineFacade {
   }
 
   async onStatus({ userId }) {
-    const preferences = await this.userRepository.getUserPreferences(userId)
+    const preferences = await this.timerPreferencesRepository.getTimerPreferences(
+      userId
+    )
+
+    console.log(await this.userDataFacade.getUserData())
 
     const nowTimestamp = new Date().getTime()
     const lastBreakTs = new Date(preferences.lastBreakStartTime).getTime()
