@@ -6,8 +6,8 @@
   "scripts": {
     "database-setup": "sequelize db:migrate:undo:all && sequelize db:migrate && sequelize db:seed:all",
     "build-server": "rm -rf build && babel -d ./build/Release ./api -s",
-    "build": "npm run build-server",
-    "dev": "nodemon --exec babel-node ./api/index.js",
+    "build": "npm run database-setup && npm run build-server",
+    "dev": "npm run database-setup && nodemon --exec babel-node ./api/index.js",
     "start": "node ./build/Release/index.js"
   },
   "repository": {
