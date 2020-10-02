@@ -17,7 +17,7 @@ class TimerPreferencesController {
       const preferences = await createTimerPreferencesUseCase.execute(userId)
 
       if (!preferences) {
-        return HttpResponse.unauthorizedError()
+        return HttpResponse.badRequest('User is already subscribed to service')
       } else {
         return HttpResponse.ok({
           message: 'Preferences Created',
@@ -68,7 +68,7 @@ class TimerPreferencesController {
     try {
       const { patchTimerPreferencesUseCase } = this.useCases
       const preferences = await patchTimerPreferencesUseCase.execute(userId, {
-        startTime: startTime ? parseInt(startTime) : undefined,
+        startTime: startTime,
         breakDuration: breakDuration ? parseInt(breakDuration) : undefined,
         breakLimitDuration: breakLimitDuration
           ? parseInt(breakLimitDuration)
@@ -113,7 +113,7 @@ class TimerPreferencesController {
       const preferences = await deleteTimerPreferencesUseCase.execute(userId)
 
       if (!preferences) {
-        return HttpResponse.unauthorizedError()
+        return HttpResponse.badRequest('User is not subscribed to service')
       } else {
         return HttpResponse.ok({
           message: 'Preferences Deleted',
