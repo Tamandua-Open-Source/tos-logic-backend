@@ -2,7 +2,7 @@ export default {
   swagger: '2.0',
   info: {
     version: '1.0.0',
-    title: 'TOS logic server',
+    title: 'Timer Service API',
     description: 'Tamandua Open Source project',
   },
 

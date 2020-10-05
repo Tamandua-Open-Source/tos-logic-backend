@@ -10,7 +10,7 @@ import swaggerDocument from './swagger.js'
 const app = express()
 const port = process.env.PORT || 8001
 
-app.use(logger('dev'))
+app.use(logger('common'))
 app.use(compression())
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: false }))
@@ -22,7 +22,7 @@ app.use('/api/timer/preferences', TimerPreferencesRouter)
 app.get('/', (_req, res) =>
   res.status(200).send({
     status: 'Success',
-    message: 'TOS Logic Server',
+    message: 'Timer Service API',
   })
 )
 
