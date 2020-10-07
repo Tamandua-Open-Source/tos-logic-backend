@@ -3,8 +3,8 @@ class WorkTimerUseCase {
     this.stateMachineFacade = stateMachineFacade
   }
 
-  async execute(userId) {
-    return await this.stateMachineFacade.onWork({ userId })
+  async execute({ userId, idToken }) {
+    return await this.stateMachineFacade.onWork({ userId, idToken })
   }
 }
 
