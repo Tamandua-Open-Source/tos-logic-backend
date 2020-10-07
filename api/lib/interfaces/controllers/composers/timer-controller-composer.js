@@ -4,6 +4,8 @@ import StateMachineFacade from '../../../infrastructure/facades/state-machine-fa
 import SchedulingFacade from '../../../infrastructure/facades/scheduling-facade'
 import UserDataFacade from '../../../infrastructure/facades/user-data-facade'
 import FirebaseAdminFacade from '../../../infrastructure/facades/firebase-admin-facade'
+import AnalyticsServiceFacade from '../../../infrastructure/facades/analytics-service-facade'
+import PushMessageRepository from '../../../infrastructure/repositories/push-message-repository'
 
 import {
   StartTimerUseCase,
@@ -20,6 +22,8 @@ class TimerControllerComposer {
     const firebaseAdminFacade = new FirebaseAdminFacade()
     const timerPreferencesRepository = new TimerPreferencesRepository()
     const userDataFacade = new UserDataFacade()
+    const analyticsServiceFacade = new AnalyticsServiceFacade()
+    const pushMessageRepository = new PushMessageRepository()
     const schedulingFacade = new SchedulingFacade({
       firebaseAdminFacade,
       stateMachineFacade: null,
@@ -28,6 +32,8 @@ class TimerControllerComposer {
       timerPreferencesRepository,
       schedulingFacade,
       userDataFacade,
+      analyticsServiceFacade,
+      pushMessageRepository,
     })
     schedulingFacade.assignStateMachineFacade({ stateMachineFacade })
 

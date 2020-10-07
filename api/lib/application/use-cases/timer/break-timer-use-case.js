@@ -3,8 +3,8 @@ class BreakTimerUseCase {
     this.stateMachineFacade = stateMachineFacade
   }
 
-  async execute(userId) {
-    return await this.stateMachineFacade.onBreak({ userId })
+  async execute({ userId, idToken }) {
+    return await this.stateMachineFacade.onBreak({ userId, idToken })
   }
 }
 

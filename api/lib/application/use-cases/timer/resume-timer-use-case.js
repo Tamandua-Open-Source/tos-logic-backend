@@ -3,8 +3,8 @@ class ResumeTimerUseCase {
     this.stateMachineFacade = stateMachineFacade
   }
 
-  async execute(userId) {
-    return await this.stateMachineFacade.onResume({ userId })
+  async execute({ userId, idToken }) {
+    return await this.stateMachineFacade.onResume({ userId, idToken })
   }
 }
 
