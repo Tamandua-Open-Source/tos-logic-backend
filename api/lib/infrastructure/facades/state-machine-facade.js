@@ -1,10 +1,19 @@
 import IStateMachineFacade from '../../application/facade-interfaces/i-state-machine-facade'
 
 class StateMachineFacade extends IStateMachineFacade {
-  constructor({ userRepository, schedulingFacade }) {
+  constructor({
+    timerPreferencesRepository,
+    schedulingFacade,
+    userDataFacade,
+    analyticsServiceFacade,
+    pushMessageRepository,
+  }) {
     super()
-    this.userRepository = userRepository
+    this.timerPreferencesRepository = timerPreferencesRepository
     this.schedulingFacade = schedulingFacade
+    this.userDataFacade = userDataFacade
+    this.analyticsServiceFacade = analyticsServiceFacade
+    this.pushMessageRepository = pushMessageRepository
 
     this.inactiveState = 'INACTIVE'
     this.workState = 'WORK'
@@ -46,14 +55,22 @@ class StateMachineFacade extends IStateMachineFacade {
     return [this.pauseState, this.pauseIdleState].includes(currentState)
   }
 
-  async onStart({ userId }) {
-    const preferences = await this.userRepository.getUserPreferences(userId)
+  async onStart({ userId, idToken }) {
+    const preferences = await this.timerPreferencesRepository.getTimerPreferences(
+      userId
+    )
+
+    const pushMessage = await this.pushMessageRepository.getPushMessagesByName({
+      name: 'NEXT_BREAK',
+    })
+
+    const userData = await this.userDataFacade.getUserData(userId)
 
     if (!this.canStartFrom(preferences.currentState)) {
       return null
     }
 
-    const patchedPreferences = await this.userRepository.patchUserPreferences(
+    const patchedPreferences = await this.timerPreferencesRepository.patchTimerPreferences(
       userId,
       {
         lastWorkStartTime: new Date(),
@@ -62,22 +79,25 @@ class StateMachineFacade extends IStateMachineFacade {
       }
     )
 
+    await this.analyticsServiceFacade.logStartCycle({ idToken })
+
     await this.schedulingFacade.removeJobsOnNotificationQueue({ userId })
     await this.schedulingFacade.removeJobsOnStateQueue({ userId })
 
     //NEXT_BREAK
     this.schedulingFacade.scheduleNotification({
       userId: userId,
-      title: '🚨 Policia da ergonomia',
-      body: 'Você está sendo conduzido a tirar um break. 💔',
-      category: 'UN_BREAK_START_CATEGORY',
-      fcmToken: preferences.fcmToken,
+      title: pushMessage[0].title || '',
+      body: pushMessage[0].body || '',
+      category: pushMessage[0].category || '',
+      fcmToken: userData.fcmToken,
       delay: preferences.workDuration,
     })
 
     //WORK_IDLE
     this.schedulingFacade.scheduleState({
       userId: userId,
+      idToken: idToken,
       state: this.workIdleState,
       delay: preferences.workLimitDuration,
     })
@@ -95,14 +115,22 @@ class StateMachineFacade extends IStateMachineFacade {
     }
   }
 
-  async onFinish({ userId }) {
-    const preferences = await this.userRepository.getUserPreferences(userId)
+  async onFinish({ userId, idToken }) {
+    const preferences = await this.timerPreferencesRepository.getTimerPreferences(
+      userId
+    )
+
+    const pushMessage = await this.pushMessageRepository.getPushMessagesByName({
+      name: 'START_CYCLE',
+    })
+
+    const userData = await this.userDataFacade.getUserData(userId)
 
     if (!this.canFinishFrom(preferences.currentState)) {
       return null
     }
 
-    const patchedPreferences = await this.userRepository.patchUserPreferences(
+    const patchedPreferences = await this.timerPreferencesRepository.patchTimerPreferences(
       userId,
       {
         lastState: preferences.currentState,
@@ -110,21 +138,22 @@ class StateMachineFacade extends IStateMachineFacade {
       }
     )
 
+    await this.analyticsServiceFacade.logFinish({ idToken })
+
     await this.schedulingFacade.removeJobsOnNotificationQueue({ userId })
     await this.schedulingFacade.removeJobsOnStateQueue({ userId })
 
     const delay = this.getMillisecondsToNextStartCycleDate({
-      startDate:
-        preferences.startTime ?? preferences.UserPreferenceStartPeriod.startsAt,
+      startDate: preferences.startTime,
     })
 
     //START_CYCLE
     this.schedulingFacade.scheduleNotification({
       userId: userId,
-      title: '🥰 Bom dia flor do dia',
-      body: 'Vamos começar o seu ciclo de trabalho de hoje? ❤️',
-      category: 'UN_START_CATEGORY',
-      fcmToken: preferences.fcmToken,
+      title: pushMessage[0].title || '',
+      body: pushMessage[0].body || '',
+      category: pushMessage[0].category || '',
+      fcmToken: userData.fcmToken,
       delay: 5000 ?? delay, //DEBUG: Retirar o '?? delay' para iniciar no próximo dia
     })
 
@@ -141,8 +170,16 @@ class StateMachineFacade extends IStateMachineFacade {
     }
   }
 
-  async onWork({ userId, elapsedDuration }) {
-    const preferences = await this.userRepository.getUserPreferences(userId)
+  async onWork({ userId, idToken, elapsedDuration }) {
+    const preferences = await this.timerPreferencesRepository.getTimerPreferences(
+      userId
+    )
+
+    const pushMessage = await this.pushMessageRepository.getPushMessagesByName({
+      name: 'NEXT_BREAK',
+    })
+
+    const userData = await this.userDataFacade.getUserData(userId)
 
     console.log('onWork', elapsedDuration)
 
@@ -152,7 +189,7 @@ class StateMachineFacade extends IStateMachineFacade {
       }
     }
 
-    const patchedPreferences = await this.userRepository.patchUserPreferences(
+    const patchedPreferences = await this.timerPreferencesRepository.patchTimerPreferences(
       userId,
       {
         lastWorkStartTime: !elapsedDuration ? new Date() : undefined,
@@ -161,22 +198,25 @@ class StateMachineFacade extends IStateMachineFacade {
       }
     )
 
+    await this.analyticsServiceFacade.logWork({ idToken })
+
     await this.schedulingFacade.removeJobsOnNotificationQueue({ userId })
     await this.schedulingFacade.removeJobsOnStateQueue({ userId })
 
     //NEXT_BREAK
     this.schedulingFacade.scheduleNotification({
       userId: userId,
-      title: '🚨 Policia da ergonomia',
-      body: 'Você está sendo conduzido a tirar um break. 💔',
-      category: 'UN_BREAK_START_CATEGORY',
-      fcmToken: preferences.fcmToken,
+      title: pushMessage[0].title || '',
+      body: pushMessage[0].body || '',
+      category: pushMessage[0].category || '',
+      fcmToken: userData.fcmToken,
       delay: preferences.workDuration - (elapsedDuration ?? 0),
     })
 
     //WORK_IDLE
     this.schedulingFacade.scheduleState({
       userId: userId,
+      idToken: idToken,
       state: this.workIdleState,
       delay: preferences.workLimitDuration - (elapsedDuration ?? 0),
     })
@@ -195,10 +235,16 @@ class StateMachineFacade extends IStateMachineFacade {
     }
   }
 
-  async onBreak({ userId, elapsedDuration }) {
-    const preferences = await this.userRepository.getUserPreferences(userId)
+  async onBreak({ userId, idToken, elapsedDuration }) {
+    const preferences = await this.timerPreferencesRepository.getTimerPreferences(
+      userId
+    )
 
-    console.log('onBreak', elapsedDuration)
+    const pushMessage = await this.pushMessageRepository.getPushMessagesByName({
+      name: 'NEXT_WORK',
+    })
+
+    const userData = await this.userDataFacade.getUserData(userId)
 
     if (!elapsedDuration) {
       if (!this.canBreakFrom(preferences.currentState)) {
@@ -206,7 +252,7 @@ class StateMachineFacade extends IStateMachineFacade {
       }
     }
 
-    const patchedPreferences = await this.userRepository.patchUserPreferences(
+    const patchedPreferences = await this.timerPreferencesRepository.patchTimerPreferences(
       userId,
       {
         lastBreakStartTime: !elapsedDuration ? new Date() : undefined,
@@ -215,22 +261,25 @@ class StateMachineFacade extends IStateMachineFacade {
       }
     )
 
+    await this.analyticsServiceFacade.logBreak({ idToken })
+
     await this.schedulingFacade.removeJobsOnNotificationQueue({ userId })
     await this.schedulingFacade.removeJobsOnStateQueue({ userId })
 
     //NEXT_WORK
     this.schedulingFacade.scheduleNotification({
       userId: userId,
-      title: '💼 Seu advogado conseguiu!',
-      body: 'Habeas corpus liberado, pode voltar a trabalhar. 🤎',
-      category: 'UN_BREAK_END_CATEGORY',
-      fcmToken: preferences.fcmToken,
+      title: pushMessage[0].title || '',
+      body: pushMessage[0].body || '',
+      category: pushMessage[0].category || '',
+      fcmToken: userData.fcmToken,
       delay: preferences.breakDuration - (elapsedDuration ?? 0),
     })
 
     //BREAK_IDLE
     this.schedulingFacade.scheduleState({
       userId: userId,
+      idToken: idToken,
       state: this.breakIdleState,
       delay: preferences.breakLimitDuration - (elapsedDuration ?? 0),
     })
@@ -249,14 +298,16 @@ class StateMachineFacade extends IStateMachineFacade {
     }
   }
 
-  async onPause({ userId }) {
-    const preferences = await this.userRepository.getUserPreferences(userId)
+  async onPause({ userId, idToken }) {
+    const preferences = await this.timerPreferencesRepository.getTimerPreferences(
+      userId
+    )
 
     if (!this.canPauseFrom(preferences.currentState)) {
       return null
     }
 
-    const patchedPreferences = await this.userRepository.patchUserPreferences(
+    const patchedPreferences = await this.timerPreferencesRepository.patchTimerPreferences(
       userId,
       {
         lastPauseStartTime: new Date(),
@@ -265,12 +316,15 @@ class StateMachineFacade extends IStateMachineFacade {
       }
     )
 
+    await this.analyticsServiceFacade.logPause({ idToken })
+
     await this.schedulingFacade.removeJobsOnNotificationQueue({ userId })
     await this.schedulingFacade.removeJobsOnStateQueue({ userId })
 
     //PAUSE_IDLE
     this.schedulingFacade.scheduleState({
       userId: userId,
+      idToken: idToken,
       state: this.pauseIdleState,
       delay: preferences.pauseLimitDuration,
     })
@@ -288,12 +342,16 @@ class StateMachineFacade extends IStateMachineFacade {
     }
   }
 
-  async onResume({ userId }) {
-    const preferences = await this.userRepository.getUserPreferences(userId)
+  async onResume({ userId, idToken }) {
+    const preferences = await this.timerPreferencesRepository.getTimerPreferences(
+      userId
+    )
 
     if (!this.canResumeFrom(preferences.currentState)) {
       return null
     }
+
+    await this.analyticsServiceFacade.logResume({ idToken })
 
     if (preferences.lastState === this.workState) {
       const lastPauseStartTime = new Date(preferences.lastPauseStartTime)
@@ -303,6 +361,7 @@ class StateMachineFacade extends IStateMachineFacade {
 
       return this.onWork({
         userId,
+        idToken,
         elapsedDuration,
       })
     } else if (preferences.lastState === this.breakState) {
@@ -313,20 +372,31 @@ class StateMachineFacade extends IStateMachineFacade {
 
       return this.onBreak({
         userId,
+        idToken,
         elapsedDuration,
       })
     }
   }
 
-  async onWorkIdle({ userId }) {
-    const preferences = await this.userRepository.getUserPreferences(userId)
+  async onWorkIdle({ userId, idToken }) {
+    const preferences = await this.timerPreferencesRepository.getTimerPreferences(
+      userId
+    )
 
-    const patchedPreferences = await this.userRepository.patchUserPreferences(
+    const pushMessage = await this.pushMessageRepository.getPushMessagesByName({
+      name: 'WORK_IDLE',
+    })
+
+    const userData = await this.userDataFacade.getUserData(userId)
+
+    const patchedPreferences = await this.timerPreferencesRepository.patchTimerPreferences(
       userId,
       {
         currentState: this.workIdleState,
       }
     )
+
+    await this.analyticsServiceFacade.logWorkIdle({ idToken })
 
     await this.schedulingFacade.removeJobsOnNotificationQueue({ userId })
     await this.schedulingFacade.removeJobsOnStateQueue({ userId })
@@ -334,30 +404,41 @@ class StateMachineFacade extends IStateMachineFacade {
     //WORK_IDLE
     this.schedulingFacade.scheduleNotification({
       userId: userId,
-      title: '⚠️⚠️⚠️',
-      body: 'Você esqueceu de tirar um descanso!!! 🧡',
-      category: 'UN_BREAK_START_CATEGORY',
-      fcmToken: preferences.fcmToken,
+      title: pushMessage[0].title || '',
+      body: pushMessage[0].body || '',
+      category: pushMessage[0].category || '',
+      fcmToken: userData.fcmToken,
       delay: 0,
     })
 
     //INACTIVE
     this.schedulingFacade.scheduleState({
       userId: userId,
+      idToken: idToken,
       state: this.inactiveState,
       delay: preferences.workIdleLimitDuration,
     })
   }
 
-  async onBreakIdle({ userId }) {
-    const preferences = await this.userRepository.getUserPreferences(userId)
+  async onBreakIdle({ userId, idToken }) {
+    const preferences = await this.timerPreferencesRepository.getTimerPreferences(
+      userId
+    )
 
-    const patchedPreferences = await this.userRepository.patchUserPreferences(
+    const pushMessage = await this.pushMessageRepository.getPushMessagesByName({
+      name: 'BREAK_IDLE',
+    })
+
+    const userData = await this.userDataFacade.getUserData(userId)
+
+    const patchedPreferences = await this.timerPreferencesRepository.patchTimerPreferences(
       userId,
       {
         currentState: this.breakIdleState,
       }
     )
+
+    await this.analyticsServiceFacade.logBreakIdle({ idToken })
 
     await this.schedulingFacade.removeJobsOnNotificationQueue({ userId })
     await this.schedulingFacade.removeJobsOnStateQueue({ userId })
@@ -365,30 +446,41 @@ class StateMachineFacade extends IStateMachineFacade {
     //BREAK_IDLE
     this.schedulingFacade.scheduleNotification({
       userId: userId,
-      title: '⚠️⚠️⚠️',
-      body: 'Você esqueceu de voltar a trabalhar!!! 💜',
-      category: 'UN_BREAK_END_CATEGORY',
-      fcmToken: preferences.fcmToken,
+      title: pushMessage[0].title || '',
+      body: pushMessage[0].body || '',
+      category: pushMessage[0].category || '',
+      fcmToken: userData.fcmToken,
       delay: 0,
     })
 
     //INACTIVE
     this.schedulingFacade.scheduleState({
       userId: userId,
+      idToken: idToken,
       state: this.inactiveState,
       delay: preferences.breakIdleLimitDuration,
     })
   }
 
-  async onPauseIdle({ userId }) {
-    const preferences = await this.userRepository.getUserPreferences(userId)
+  async onPauseIdle({ userId, idToken }) {
+    const preferences = await this.timerPreferencesRepository.getTimerPreferences(
+      userId
+    )
 
-    const patchedPreferences = await this.userRepository.patchUserPreferences(
+    const pushMessage = await this.pushMessageRepository.getPushMessagesByName({
+      name: 'PAUSE_IDLE',
+    })
+
+    const userData = await this.userDataFacade.getUserData(userId)
+
+    const patchedPreferences = await this.timerPreferencesRepository.patchTimerPreferences(
       userId,
       {
         currentState: this.pauseIdleState,
       }
     )
+
+    await this.analyticsServiceFacade.logPauseIdle({ idToken })
 
     await this.schedulingFacade.removeJobsOnNotificationQueue({ userId })
     await this.schedulingFacade.removeJobsOnStateQueue({ userId })
@@ -396,25 +488,34 @@ class StateMachineFacade extends IStateMachineFacade {
     //PAUSE_IDLE
     this.schedulingFacade.scheduleNotification({
       userId: userId,
-      title: '⚠️⚠️⚠️',
-      body: 'Você esqueceu o timer pausado!!! 💚',
-      category: 'UN_DEFAULT_CATEGORY',
-      fcmToken: preferences.fcmToken,
+      title: pushMessage[0].title || '',
+      body: pushMessage[0].body || '',
+      category: pushMessage[0].category || '',
+      fcmToken: userData.fcmToken,
       delay: 0,
     })
 
     //INACTIVE
     this.schedulingFacade.scheduleState({
       userId: userId,
+      idToken: idToken,
       state: this.inactiveState,
       delay: preferences.pauseIdleLimitDuration,
     })
   }
 
-  async onInactive({ userId }) {
-    const preferences = await this.userRepository.getUserPreferences(userId)
+  async onInactive({ userId, idToken }) {
+    const preferences = await this.timerPreferencesRepository.getTimerPreferences(
+      userId
+    )
 
-    const patchedPreferences = await this.userRepository.patchUserPreferences(
+    const pushMessage = await this.pushMessageRepository.getPushMessagesByName({
+      name: 'INACTIVE',
+    })
+
+    const userData = await this.userDataFacade.getUserData(userId)
+
+    const patchedPreferences = await this.timerPreferencesRepository.patchTimerPreferences(
       userId,
       {
         lastState: preferences.currentState,
@@ -422,24 +523,28 @@ class StateMachineFacade extends IStateMachineFacade {
       }
     )
 
+    await this.analyticsServiceFacade.logInactive({ idToken })
+
     await this.schedulingFacade.removeJobsOnNotificationQueue({ userId })
     await this.schedulingFacade.removeJobsOnStateQueue({ userId })
 
     //INACTIVE
     this.schedulingFacade.scheduleNotification({
       userId: userId,
-      title: '🚫🚫🚫',
-      body: 'Você me esqueceu mesmo né. Até amanhã então...',
-      category: 'UN_DEFAULT_CATEGORY',
-      fcmToken: preferences.fcmToken,
+      title: pushMessage[0].title || '',
+      body: pushMessage[0].body || '',
+      category: pushMessage[0].category || '',
+      fcmToken: userData.fcmToken,
       delay: 0,
     })
 
     this.onFinish({ userId })
   }
 
-  async onStatus({ userId }) {
-    const preferences = await this.userRepository.getUserPreferences(userId)
+  async onStatus({ userId, idToken }) {
+    const preferences = await this.timerPreferencesRepository.getTimerPreferences(
+      userId
+    )
 
     const nowTimestamp = new Date().getTime()
     const lastBreakTs = new Date(preferences.lastBreakStartTime).getTime()

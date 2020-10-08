@@ -51,18 +51,22 @@ class SchedulingFacade extends ISchedulingFacade {
         case this.stateMachineFacade.workIdleState:
           return this.stateMachineFacade.onWorkIdle({
             userId: job.data.userId,
+            idToken: job.data.idToken,
           })
         case this.stateMachineFacade.breakIdleState:
           return this.stateMachineFacade.onBreakIdle({
             userId: job.data.userId,
+            idToken: job.data.idToken,
           })
         case this.stateMachineFacade.pauseIdleState:
           return this.stateMachineFacade.onPauseIdle({
             userId: job.data.userId,
+            idToken: job.data.idToken,
           })
         case this.stateMachineFacade.inactiveState:
           return this.stateMachineFacade.onInactive({
             userId: job.data.userId,
+            idToken: job.data.idToken,
           })
         default:
           console.log('Erro aqui')
@@ -130,9 +134,10 @@ class SchedulingFacade extends ISchedulingFacade {
     )
   }
 
-  scheduleState({ userId, state, delay }) {
+  scheduleState({ userId, idToken, state, delay }) {
     const data = {
       userId,
+      idToken,
       state,
     }
 

@@ -3,8 +3,8 @@ class FinishTimerUseCase {
     this.stateMachineFacade = stateMachineFacade
   }
 
-  async execute(userId) {
-    return await this.stateMachineFacade.onFinish({ userId })
+  async execute({ userId, idToken }) {
+    return await this.stateMachineFacade.onFinish({ userId, idToken })
   }
 }
 

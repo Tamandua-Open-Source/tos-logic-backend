@@ -4,11 +4,10 @@
   "description": "tos logic server",
   "main": "index.js",
   "scripts": {
-    "database-setup": "sequelize db:migrate:undo:all && sequelize db:migrate && sequelize db:seed:all",
-    "build-server": "rm -rf build && babel -d ./build/Release ./api -s",
-    "build": "npm run build-server",
-    "dev": "nodemon --exec babel-node ./api/index.js",
-    "start": "node ./build/Release/index.js"
+    "db:wipe": "sequelize db:migrate:undo:all && sequelize db:migrate && sequelize db:seed:all",
+    "build": "rm -rf build && babel -d ./build/Release ./api -s",
+    "start": "node ./build/Release/index.js",
+    "dev": "nodemon --exec babel-node ./api/index.js"
   },
   "repository": {
     "type": "git",
@@ -21,12 +20,13 @@
   },
   "homepage": "https://github.com/Tamandua-Open-Source/tos-logic-backend#readme",
   "dependencies": {
+    "axios": "^0.20.0",
     "body-parser": "^1.19.0",
     "bull": "^3.18.0",
     "compression": "^1.7.4",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
-    "firebase-admin": "^9.0.0",
+    "firebase-admin": "^9.2.0",
     "morgan": "^1.10.0",
     "path": "^0.12.7",
     "pg": "^8.2.1",

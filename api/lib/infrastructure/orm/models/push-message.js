@@ -3,12 +3,10 @@
 const { Model } = require('sequelize')
 
 module.exports = (sequelize, DataTypes) => {
-  class UserPreferenceGoal extends Model {
-    static associate(models) {
-      UserPreferenceGoal.belongsTo(models.UserPreference)
-    }
+  class PushMessage extends Model {
+    static associate(models) {}
   }
-  UserPreferenceGoal.init(
+  PushMessage.init(
     {
       id: {
         type: DataTypes.INTEGER,
@@ -16,21 +14,20 @@ module.exports = (sequelize, DataTypes) => {
         autoIncrement: true,
         primaryKey: true,
       },
-      UserPreferenceId: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        unique: true,
-      },
-      criticalPain: {
-        type: DataTypes.BOOLEAN,
+      name: {
+        type: DataTypes.STRING,
         allowNull: false,
       },
-      painFromWork: {
-        type: DataTypes.BOOLEAN,
+      title: {
+        type: DataTypes.TEXT,
         allowNull: false,
       },
-      futurePain: {
-        type: DataTypes.BOOLEAN,
+      body: {
+        type: DataTypes.TEXT,
+        allowNull: false,
+      },
+      category: {
+        type: DataTypes.TEXT,
         allowNull: false,
       },
       createdAt: {
@@ -44,8 +41,8 @@ module.exports = (sequelize, DataTypes) => {
     },
     {
       sequelize,
-      modelName: 'UserPreferenceGoal',
+      modelName: 'PushMessage',
     }
   )
-  return UserPreferenceGoal
+  return PushMessage
 }

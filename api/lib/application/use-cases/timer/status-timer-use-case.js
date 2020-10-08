@@ -3,8 +3,8 @@ class StatusTimerUseCase {
     this.stateMachineFacade = stateMachineFacade
   }
 
-  async execute(userId) {
-    return await this.stateMachineFacade.onStatus({ userId })
+  async execute({ userId, idToken }) {
+    return await this.stateMachineFacade.onStatus({ userId, idToken })
   }
 }
 
