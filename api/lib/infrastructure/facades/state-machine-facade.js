@@ -60,15 +60,15 @@ class StateMachineFacade extends IStateMachineFacade {
       userId
     )
 
+    if (!this.canStartFrom(preferences.currentState)) return null
+
     const pushMessage = await this.pushMessageRepository.getPushMessagesByName({
       name: 'NEXT_BREAK',
     })
 
-    const userData = await this.userDataFacade.getUserData(userId)
-
-    if (!this.canStartFrom(preferences.currentState)) {
-      return null
-    }
+    const userData = await this.userDataFacade.getUserData({
+      idToken: idToken,
+    })
 
     const patchedPreferences = await this.timerPreferencesRepository.patchTimerPreferences(
       userId,
@@ -120,15 +120,15 @@ class StateMachineFacade extends IStateMachineFacade {
       userId
     )
 
+    if (!this.canFinishFrom(preferences.currentState)) return null
+
     const pushMessage = await this.pushMessageRepository.getPushMessagesByName({
       name: 'START_CYCLE',
     })
 
-    const userData = await this.userDataFacade.getUserData(userId)
-
-    if (!this.canFinishFrom(preferences.currentState)) {
-      return null
-    }
+    const userData = await this.userDataFacade.getUserData({
+      idToken: idToken,
+    })
 
     const patchedPreferences = await this.timerPreferencesRepository.patchTimerPreferences(
       userId,
@@ -175,19 +175,17 @@ class StateMachineFacade extends IStateMachineFacade {
       userId
     )
 
+    if (!elapsedDuration) {
+      if (!this.canWorkFrom(preferences.currentState)) return null
+    }
+
     const pushMessage = await this.pushMessageRepository.getPushMessagesByName({
       name: 'NEXT_BREAK',
     })
 
-    const userData = await this.userDataFacade.getUserData(userId)
-
-    console.log('onWork', elapsedDuration)
-
-    if (!elapsedDuration) {
-      if (!this.canWorkFrom(preferences.currentState)) {
-        return null
-      }
-    }
+    const userData = await this.userDataFacade.getUserData({
+      idToken: idToken,
+    })
 
     const patchedPreferences = await this.timerPreferencesRepository.patchTimerPreferences(
       userId,
@@ -240,17 +238,17 @@ class StateMachineFacade extends IStateMachineFacade {
       userId
     )
 
+    if (!elapsedDuration) {
+      if (!this.canBreakFrom(preferences.currentState)) return null
+    }
+
     const pushMessage = await this.pushMessageRepository.getPushMessagesByName({
       name: 'NEXT_WORK',
     })
 
-    const userData = await this.userDataFacade.getUserData(userId)
-
-    if (!elapsedDuration) {
-      if (!this.canBreakFrom(preferences.currentState)) {
-        return null
-      }
-    }
+    const userData = await this.userDataFacade.getUserData({
+      idToken: idToken,
+    })
 
     const patchedPreferences = await this.timerPreferencesRepository.patchTimerPreferences(
       userId,
@@ -303,9 +301,7 @@ class StateMachineFacade extends IStateMachineFacade {
       userId
     )
 
-    if (!this.canPauseFrom(preferences.currentState)) {
-      return null
-    }
+    if (!this.canPauseFrom(preferences.currentState)) return null
 
     const patchedPreferences = await this.timerPreferencesRepository.patchTimerPreferences(
       userId,
@@ -347,9 +343,7 @@ class StateMachineFacade extends IStateMachineFacade {
       userId
     )
 
-    if (!this.canResumeFrom(preferences.currentState)) {
-      return null
-    }
+    if (!this.canResumeFrom(preferences.currentState)) return null
 
     await this.analyticsServiceFacade.logResume({ idToken })
 
@@ -387,7 +381,9 @@ class StateMachineFacade extends IStateMachineFacade {
       name: 'WORK_IDLE',
     })
 
-    const userData = await this.userDataFacade.getUserData(userId)
+    const userData = await this.userDataFacade.getUserData({
+      idToken: idToken,
+    })
 
     const patchedPreferences = await this.timerPreferencesRepository.patchTimerPreferences(
       userId,
@@ -429,7 +425,9 @@ class StateMachineFacade extends IStateMachineFacade {
       name: 'BREAK_IDLE',
     })
 
-    const userData = await this.userDataFacade.getUserData(userId)
+    const userData = await this.userDataFacade.getUserData({
+      idToken: idToken,
+    })
 
     const patchedPreferences = await this.timerPreferencesRepository.patchTimerPreferences(
       userId,
@@ -471,7 +469,9 @@ class StateMachineFacade extends IStateMachineFacade {
       name: 'PAUSE_IDLE',
     })
 
-    const userData = await this.userDataFacade.getUserData(userId)
+    const userData = await this.userDataFacade.getUserData({
+      idToken: idToken,
+    })
 
     const patchedPreferences = await this.timerPreferencesRepository.patchTimerPreferences(
       userId,
@@ -513,7 +513,9 @@ class StateMachineFacade extends IStateMachineFacade {
       name: 'INACTIVE',
     })
 
-    const userData = await this.userDataFacade.getUserData(userId)
+    const userData = await this.userDataFacade.getUserData({
+      idToken: idToken,
+    })
 
     const patchedPreferences = await this.timerPreferencesRepository.patchTimerPreferences(
       userId,

@@ -9,123 +9,163 @@ class AnalyticsServiceFacade {
   }
 
   async logBreakIdle({ idToken }) {
-    await axios.post(
-      `${this.base_url}/api/analytics/actions/breakIdle`,
-      {},
-      {
-        headers: {
-          Authorization: idToken,
-        },
-      }
-    )
+    try {
+      await axios.post(
+        `${this.base_url}/api/analytics/actions/breakIdle`,
+        {},
+        {
+          headers: {
+            Authorization: idToken,
+          },
+        }
+      )
+    } catch (error) {
+      console.log('[ANALYTICS-SERVICE_FACADE] - service unavailable: ', error)
+    }
   }
 
   async logBreak({ idToken }) {
-    await axios.post(
-      `${this.base_url}/api/analytics/actions/break`,
-      {},
-      {
-        headers: {
-          Authorization: idToken,
-        },
-      }
-    )
+    try {
+      await axios.post(
+        `${this.base_url}/api/analytics/actions/break`,
+        {},
+        {
+          headers: {
+            Authorization: idToken,
+          },
+        }
+      )
+    } catch (error) {
+      console.log('[ANALYTICS-SERVICE_FACADE] - service unavailable: ', error)
+    }
   }
 
   async logFinish({ idToken }) {
-    await axios.post(
-      `${this.base_url}/api/analytics/actions/finish`,
-      {},
-      {
-        headers: {
-          Authorization: idToken,
-        },
-      }
-    )
+    try {
+      await axios.post(
+        `${this.base_url}/api/analytics/actions/finish`,
+        {},
+        {
+          headers: {
+            Authorization: idToken,
+          },
+        }
+      )
+    } catch (error) {
+      console.log('[ANALYTICS-SERVICE_FACADE] - service unavailable: ', error)
+    }
   }
 
   async logInactive({ idToken }) {
-    await axios.post(
-      `${this.base_url}/api/analytics/actions/inactive`,
-      {},
-      {
-        headers: {
-          Authorization: idToken,
-        },
-      }
-    )
+    try {
+      await axios.post(
+        `${this.base_url}/api/analytics/actions/inactive`,
+        {},
+        {
+          headers: {
+            Authorization: idToken,
+          },
+        }
+      )
+    } catch (error) {
+      console.log('[ANALYTICS-SERVICE_FACADE] - service unavailable: ', error)
+    }
   }
 
   async logPauseIdle({ idToken }) {
-    await axios.post(
-      `${this.base_url}/api/analytics/actions/pauseIdle`,
-      {},
-      {
-        headers: {
-          Authorization: idToken,
-        },
-      }
-    )
+    try {
+      await axios.post(
+        `${this.base_url}/api/analytics/actions/pauseIdle`,
+        {},
+        {
+          headers: {
+            Authorization: idToken,
+          },
+        }
+      )
+    } catch (error) {
+      console.log('[ANALYTICS-SERVICE_FACADE] - service unavailable: ', error)
+    }
   }
 
   async logPause({ idToken }) {
-    await axios.post(
-      `${this.base_url}/api/analytics/actions/pause`,
-      {},
-      {
-        headers: {
-          Authorization: idToken,
-        },
-      }
-    )
+    try {
+      await axios.post(
+        `${this.base_url}/api/analytics/actions/pause`,
+        {},
+        {
+          headers: {
+            Authorization: idToken,
+          },
+        }
+      )
+    } catch (error) {
+      console.log('[ANALYTICS-SERVICE_FACADE] - service unavailable: ', error)
+    }
   }
 
   async logResume({ idToken }) {
-    await axios.post(
-      `${this.base_url}/api/analytics/actions/resume`,
-      {},
-      {
-        headers: {
-          Authorization: idToken,
-        },
-      }
-    )
+    try {
+      await axios.post(
+        `${this.base_url}/api/analytics/actions/resume`,
+        {},
+        {
+          headers: {
+            Authorization: idToken,
+          },
+        }
+      )
+    } catch (error) {
+      console.log('[ANALYTICS-SERVICE_FACADE] - service unavailable: ', error)
+    }
   }
 
   async logStartCycle({ idToken }) {
-    await axios.post(
-      `${this.base_url}/api/analytics/actions/startCycle`,
-      {},
-      {
-        headers: {
-          Authorization: idToken,
-        },
-      }
-    )
+    try {
+      await axios.post(
+        `${this.base_url}/api/analytics/actions/startCycle`,
+        {},
+        {
+          headers: {
+            Authorization: idToken,
+          },
+        }
+      )
+    } catch (error) {
+      console.log('[ANALYTICS-SERVICE_FACADE] - service unavailable: ', error)
+    }
   }
 
   async logWorkIdle({ idToken }) {
-    await axios.post(
-      `${this.base_url}/api/analytics/actions/workIdle`,
-      {},
-      {
-        headers: {
-          Authorization: idToken,
-        },
-      }
-    )
+    try {
+      await axios.post(
+        `${this.base_url}/api/analytics/actions/workIdle`,
+        {},
+        {
+          headers: {
+            Authorization: idToken,
+          },
+        }
+      )
+    } catch (error) {
+      console.log('[ANALYTICS-SERVICE_FACADE] - service unavailable: ', error)
+    }
   }
 
   async logWork({ idToken }) {
-    await axios.post(
-      `${this.base_url}/api/analytics/actions/work`,
-      {},
-      {
-        headers: {
-          Authorization: idToken,
-        },
-      }
-    )
+    try {
+      await axios.post(
+        `${this.base_url}/api/analytics/actions/work`,
+        {},
+        {
+          headers: {
+            Authorization: idToken,
+          },
+        }
+      )
+    } catch (error) {
+      console.log('[ANALYTICS-SERVICE_FACADE] - service unavailable: ', error)
+    }
   }
 }
 

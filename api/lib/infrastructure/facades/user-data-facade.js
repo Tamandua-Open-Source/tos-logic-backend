@@ -1,12 +1,32 @@
-import IUserDataFacade from '../../application/facade-interfaces/i-user-data-facade'
+import axios from 'axios'
 
-//conectar essa facade com a API de dados
-class UserDataFacade extends IUserDataFacade {
-  async getUserData(userId) {
-    return {
-      fcmToken:
-        'fB_deuQbPkTOsFUPrb_I45:APA91bHP6kNOOahgukAMDSMF9ppuOD832iN0204CJG_COQHC9HQW5cqTlR9zxPLtQXYXdragbmnmqI8rE2O9KJSN-vpN_AWyC5dv78f7VwKPCPkRRV97f0xMie8DLIP0ak0nNUqoRCu2',
-      name: 'Otavinho do gueto e coisarada',
+import * as dotenv from 'dotenv'
+dotenv.config()
+
+class UserDataFacade {
+  constructor() {
+    this.base_url = process.env.API_URL
+  }
+
+  async getUserData({ idToken }) {
+    try {
+      const response = await axios.get(
+        `${this.base_url}/api/users/me/preferences`,
+        {
+          headers: {
+            Authorization: idToken,
+          },
+        }
+      )
+      return {
+        fcmToken: response.data.preferences.fcmToken,
+      }
+    } catch (error) {
+      console.log('[USER-DATA-FACADE] - service unavailable', error)
+
+      return {
+        fcmToken: null,
+      }
     }
   }
 }
