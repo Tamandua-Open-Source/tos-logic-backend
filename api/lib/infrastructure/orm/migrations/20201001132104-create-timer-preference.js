@@ -14,6 +14,10 @@ module.exports = {
         allowNull: false,
         unique: true,
       },
+      fcmToken: {
+        type: Sequelize.STRING,
+        allowNull: true,
+      },
       startTime: {
         type: Sequelize.DATE,
         allowNull: false,
