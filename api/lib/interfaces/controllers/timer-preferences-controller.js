@@ -55,6 +55,7 @@ class TimerPreferencesController {
 
   async patchTimerPreferences(req) {
     const {
+      fcmToken,
       startTime,
       breakDuration,
       breakLimitDuration,
@@ -70,6 +71,7 @@ class TimerPreferencesController {
     try {
       const { patchTimerPreferencesUseCase } = this.useCases
       const preferences = await patchTimerPreferencesUseCase.execute(userId, {
+        fcmToken: fcmToken,
         startTime: startTime,
         breakDuration: breakDuration ? parseInt(breakDuration) : undefined,
         breakLimitDuration: breakLimitDuration

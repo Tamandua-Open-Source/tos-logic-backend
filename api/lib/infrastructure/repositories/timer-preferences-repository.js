@@ -5,6 +5,7 @@ class TimerPreferencesRepository extends ITimerPreferencesRepository {
   async createTimerPreferences(userId) {
     return await db.TimerPreference.create({
       UserId: userId,
+      fcmToken: null,
       startTime: new Date(),
       breakDuration: 5000,
       breakLimitDuration: 15000,
