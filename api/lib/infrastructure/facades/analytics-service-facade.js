@@ -20,7 +20,7 @@ class AnalyticsServiceFacade {
         }
       )
     } catch (error) {
-      console.log('[ANALYTICS-SERVICE_FACADE] - service unavailable: ', error)
+      console.log('[ANALYTICS-SERVICE-FACADE] - service unavailable: ', error)
     }
   }
 
@@ -36,7 +36,7 @@ class AnalyticsServiceFacade {
         }
       )
     } catch (error) {
-      console.log('[ANALYTICS-SERVICE_FACADE] - service unavailable: ', error)
+      console.log('[ANALYTICS-SERVICE-FACADE] - service unavailable: ', error)
     }
   }
 
@@ -52,7 +52,7 @@ class AnalyticsServiceFacade {
         }
       )
     } catch (error) {
-      console.log('[ANALYTICS-SERVICE_FACADE] - service unavailable: ', error)
+      console.log('[ANALYTICS-SERVICE-FACADE] - service unavailable: ', error)
     }
   }
 
@@ -68,7 +68,7 @@ class AnalyticsServiceFacade {
         }
       )
     } catch (error) {
-      console.log('[ANALYTICS-SERVICE_FACADE] - service unavailable: ', error)
+      console.log('[ANALYTICS-SERVICE-FACADE] - service unavailable: ', error)
     }
   }
 
@@ -84,7 +84,7 @@ class AnalyticsServiceFacade {
         }
       )
     } catch (error) {
-      console.log('[ANALYTICS-SERVICE_FACADE] - service unavailable: ', error)
+      console.log('[ANALYTICS-SERVICE-FACADE] - service unavailable: ', error)
     }
   }
 
@@ -100,7 +100,7 @@ class AnalyticsServiceFacade {
         }
       )
     } catch (error) {
-      console.log('[ANALYTICS-SERVICE_FACADE] - service unavailable: ', error)
+      console.log('[ANALYTICS-SERVICE-FACADE] - service unavailable: ', error)
     }
   }
 
@@ -116,7 +116,7 @@ class AnalyticsServiceFacade {
         }
       )
     } catch (error) {
-      console.log('[ANALYTICS-SERVICE_FACADE] - service unavailable: ', error)
+      console.log('[ANALYTICS-SERVICE-FACADE] - service unavailable: ', error)
     }
   }
 
@@ -132,7 +132,7 @@ class AnalyticsServiceFacade {
         }
       )
     } catch (error) {
-      console.log('[ANALYTICS-SERVICE_FACADE] - service unavailable: ', error)
+      console.log('[ANALYTICS-SERVICE-FACADE] - service unavailable: ', error)
     }
   }
 
@@ -148,7 +148,7 @@ class AnalyticsServiceFacade {
         }
       )
     } catch (error) {
-      console.log('[ANALYTICS-SERVICE_FACADE] - service unavailable: ', error)
+      console.log('[ANALYTICS-SERVICE-FACADE] - service unavailable: ', error)
     }
   }
 
@@ -164,7 +164,7 @@ class AnalyticsServiceFacade {
         }
       )
     } catch (error) {
-      console.log('[ANALYTICS-SERVICE_FACADE] - service unavailable: ', error)
+      console.log('[ANALYTICS-SERVICE-FACADE] - service unavailable: ', error)
     }
   }
 }
