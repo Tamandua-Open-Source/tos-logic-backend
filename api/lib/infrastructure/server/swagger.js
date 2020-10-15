@@ -259,6 +259,7 @@ export default {
             schema: {
               type: 'object',
               properties: {
+                fcmToken: { type: 'string' },
                 startTime: { type: 'string' },
                 breakDuration: { type: 'integer' },
                 breakLimitDuration: { type: 'integer' },
@@ -404,6 +405,9 @@ export default {
               type: 'integer',
             },
             UserId: {
+              type: 'string',
+            },
+            fcmToken: {
               type: 'string',
             },
             startTime: {
