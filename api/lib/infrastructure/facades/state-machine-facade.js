@@ -76,6 +76,8 @@ class StateMachineFacade extends IStateMachineFacade {
       this.schedulingFacade.removeJobsOnStateQueue({ userId }),
     ])
 
+    this.analyticsServiceFacade.logWork({ idToken })
+
     const millisecondsToInactive =
       preferences.workLimitDuration + preferences.workIdleLimitDuration
 
@@ -110,12 +112,14 @@ class StateMachineFacade extends IStateMachineFacade {
     }
   }
 
-  async onFinish({ userId, idToken }) {
+  async onFinish({ userId, idToken, fromIdleState }) {
     const preferences = await this.timerPreferencesRepository.getTimerPreferences(
       userId
     )
 
-    if (!this.canFinishFrom(preferences.currentState)) return null
+    if (!fromIdleState) {
+      if (!this.canFinishFrom(preferences.currentState)) return null
+    }
 
     const [pushMessage, patchedPreferences] = await Promise.all([
       this.pushMessageRepository.getPushMessagesByName({
@@ -506,7 +510,7 @@ class StateMachineFacade extends IStateMachineFacade {
       delay: 0,
     })
 
-    this.onFinish({ userId })
+    this.onFinish({ userId, idToken, fromIdleState: true })
   }
 
   async onStatus({ userId, idToken }) {
