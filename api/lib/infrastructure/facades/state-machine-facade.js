@@ -58,7 +58,16 @@ class StateMachineFacade extends IStateMachineFacade {
       userId
     )
 
-    if (!this.canStartFrom(preferences.currentState)) return null
+    //operation is blocked
+    if (!this.canStartFrom(preferences.currentState)) {
+      return {
+        status: {
+          lastState: preferences.lastState,
+          currentState: preferences.currentState,
+        },
+        success: false,
+      }
+    }
 
     const [pushMessage, patchedPreferences] = await Promise.all([
       this.pushMessageRepository.getPushMessagesByName({
@@ -100,15 +109,18 @@ class StateMachineFacade extends IStateMachineFacade {
     })
 
     return {
-      lastState: patchedPreferences.lastState,
-      currentState: patchedPreferences.currentState,
-      millisecondsToStartCycle: null,
-      millisecondsToNextBreak: preferences.workDuration,
-      millisecondsToNextWork: null,
-      millisecondsToBreakIdle: null,
-      millisecondsToWorkIdle: preferences.workLimitDuration,
-      millisecondsToPauseIdle: null,
-      millisecondsToInactive: millisecondsToInactive,
+      status: {
+        lastState: patchedPreferences.lastState,
+        currentState: patchedPreferences.currentState,
+        millisecondsToStartCycle: null,
+        millisecondsToNextBreak: preferences.workDuration,
+        millisecondsToNextWork: null,
+        millisecondsToBreakIdle: null,
+        millisecondsToWorkIdle: preferences.workLimitDuration,
+        millisecondsToPauseIdle: null,
+        millisecondsToInactive: millisecondsToInactive,
+      },
+      success: true,
     }
   }
 
@@ -117,8 +129,17 @@ class StateMachineFacade extends IStateMachineFacade {
       userId
     )
 
+    //operation is blocked
     if (!fromIdleState) {
-      if (!this.canFinishFrom(preferences.currentState)) return null
+      if (!this.canFinishFrom(preferences.currentState)) {
+        return {
+          status: {
+            lastState: preferences.lastState,
+            currentState: preferences.currentState,
+          },
+          success: false,
+        }
+      }
     }
 
     const [pushMessage, patchedPreferences] = await Promise.all([
@@ -151,15 +172,18 @@ class StateMachineFacade extends IStateMachineFacade {
     })
 
     return {
-      lastState: patchedPreferences.lastState,
-      currentState: patchedPreferences.currentState,
-      millisecondsToStartCycle: millisecondsToStartCycle,
-      millisecondsToNextBreak: null,
-      millisecondsToNextWork: null,
-      millisecondsToBreakIdle: null,
-      millisecondsToWorkIdle: null,
-      millisecondsToPauseIdle: null,
-      millisecondsToInactive: null,
+      status: {
+        lastState: patchedPreferences.lastState,
+        currentState: patchedPreferences.currentState,
+        millisecondsToStartCycle: millisecondsToStartCycle,
+        millisecondsToNextBreak: null,
+        millisecondsToNextWork: null,
+        millisecondsToBreakIdle: null,
+        millisecondsToWorkIdle: null,
+        millisecondsToPauseIdle: null,
+        millisecondsToInactive: null,
+      },
+      success: true,
     }
   }
 
@@ -168,8 +192,17 @@ class StateMachineFacade extends IStateMachineFacade {
       userId
     )
 
+    //operation is blocked
     if (!elapsedDuration) {
-      if (!this.canWorkFrom(preferences.currentState)) return null
+      if (!this.canWorkFrom(preferences.currentState)) {
+        return {
+          status: {
+            lastState: preferences.lastState,
+            currentState: preferences.currentState,
+          },
+          success: false,
+        }
+      }
     }
 
     const [pushMessage, patchedPreferences] = await Promise.all([
@@ -216,15 +249,18 @@ class StateMachineFacade extends IStateMachineFacade {
     })
 
     return {
-      lastState: patchedPreferences.lastState,
-      currentState: patchedPreferences.currentState,
-      millisecondsToStartCycle: null,
-      millisecondsToNextBreak: millisecondsToNextBreak,
-      millisecondsToNextWork: null,
-      millisecondsToBreakIdle: null,
-      millisecondsToWorkIdle: millisecondsToWorkIdle,
-      millisecondsToPauseIdle: null,
-      millisecondsToInactive: millisecondsToInactive,
+      status: {
+        lastState: patchedPreferences.lastState,
+        currentState: patchedPreferences.currentState,
+        millisecondsToStartCycle: null,
+        millisecondsToNextBreak: millisecondsToNextBreak,
+        millisecondsToNextWork: null,
+        millisecondsToBreakIdle: null,
+        millisecondsToWorkIdle: millisecondsToWorkIdle,
+        millisecondsToPauseIdle: null,
+        millisecondsToInactive: millisecondsToInactive,
+      },
+      success: true,
     }
   }
 
@@ -233,8 +269,17 @@ class StateMachineFacade extends IStateMachineFacade {
       userId
     )
 
+    //operation is blocked
     if (!elapsedDuration) {
-      if (!this.canBreakFrom(preferences.currentState)) return null
+      if (!this.canBreakFrom(preferences.currentState)) {
+        return {
+          status: {
+            lastState: preferences.lastState,
+            currentState: preferences.currentState,
+          },
+          success: false,
+        }
+      }
     }
 
     const [pushMessage, patchedPreferences] = await Promise.all([
@@ -281,15 +326,18 @@ class StateMachineFacade extends IStateMachineFacade {
     })
 
     return {
-      lastState: patchedPreferences.lastState,
-      currentState: patchedPreferences.currentState,
-      millisecondsToStartCycle: null,
-      millisecondsToNextBreak: null,
-      millisecondsToNextWork: millisecondsToNextWork,
-      millisecondsToBreakIdle: millisecondsToBreakIdle,
-      millisecondsToWorkIdle: null,
-      millisecondsToPauseIdle: null,
-      millisecondsToInactive: millisecondsToInactive,
+      status: {
+        lastState: patchedPreferences.lastState,
+        currentState: patchedPreferences.currentState,
+        millisecondsToStartCycle: null,
+        millisecondsToNextBreak: null,
+        millisecondsToNextWork: millisecondsToNextWork,
+        millisecondsToBreakIdle: millisecondsToBreakIdle,
+        millisecondsToWorkIdle: null,
+        millisecondsToPauseIdle: null,
+        millisecondsToInactive: millisecondsToInactive,
+      },
+      success: true,
     }
   }
 
@@ -298,7 +346,16 @@ class StateMachineFacade extends IStateMachineFacade {
       userId
     )
 
-    if (!this.canPauseFrom(preferences.currentState)) return null
+    //operation is blocked
+    if (!this.canPauseFrom(preferences.currentState)) {
+      return {
+        status: {
+          lastState: preferences.lastState,
+          currentState: preferences.currentState,
+        },
+        success: false,
+      }
+    }
 
     const [patchedPreferences] = await Promise.all([
       this.timerPreferencesRepository.patchTimerPreferences(userId, {
@@ -324,15 +381,18 @@ class StateMachineFacade extends IStateMachineFacade {
     })
 
     return {
-      lastState: patchedPreferences.lastState,
-      currentState: patchedPreferences.currentState,
-      millisecondsToStartCycle: null,
-      millisecondsToNextBreak: null,
-      millisecondsToNextWork: null,
-      millisecondsToBreakIdle: null,
-      millisecondsToWorkIdle: null,
-      millisecondsToPauseIdle: preferences.pauseLimitDuration,
-      millisecondsToInactive: millisecondsToInactive,
+      status: {
+        lastState: patchedPreferences.lastState,
+        currentState: patchedPreferences.currentState,
+        millisecondsToStartCycle: null,
+        millisecondsToNextBreak: null,
+        millisecondsToNextWork: null,
+        millisecondsToBreakIdle: null,
+        millisecondsToWorkIdle: null,
+        millisecondsToPauseIdle: preferences.pauseLimitDuration,
+        millisecondsToInactive: millisecondsToInactive,
+      },
+      success: true,
     }
   }
 
@@ -341,7 +401,16 @@ class StateMachineFacade extends IStateMachineFacade {
       userId
     )
 
-    if (!this.canResumeFrom(preferences.currentState)) return null
+    //operation is blocked
+    if (!this.canResumeFrom(preferences.currentState)) {
+      return {
+        status: {
+          lastState: preferences.lastState,
+          currentState: preferences.currentState,
+        },
+        success: false,
+      }
+    }
 
     const [] = await Promise.all([
       this.analyticsServiceFacade.logResume({ idToken }),
