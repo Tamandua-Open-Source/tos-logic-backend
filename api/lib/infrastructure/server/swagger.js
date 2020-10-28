@@ -15,6 +15,9 @@ export default {
       name: 'Timer Preferences',
       description: 'API for timer service preferences',
     },
+    {
+      name: 'Service Subscription',
+    },
   ],
 
   schemes: ['https', 'http'],
@@ -43,7 +46,14 @@ export default {
             description: 'OK',
             schema: {
               type: 'object',
-              $ref: '#/definitions/Timer Response',
+              $ref: '#/definitions/Success Timer Response',
+            },
+          },
+          204: {
+            description: 'Fail - Code will be 200, (TODO: change to 204)',
+            schema: {
+              type: 'object',
+              $ref: '#/definitions/Fail Timer Response',
             },
           },
         },
@@ -70,7 +80,14 @@ export default {
             description: 'OK',
             schema: {
               type: 'object',
-              $ref: '#/definitions/Timer Response',
+              $ref: '#/definitions/Success Timer Response',
+            },
+          },
+          204: {
+            description: 'Fail - Code will be 200, (TODO: change to 204)',
+            schema: {
+              type: 'object',
+              $ref: '#/definitions/Fail Timer Response',
             },
           },
         },
@@ -97,7 +114,14 @@ export default {
             description: 'OK',
             schema: {
               type: 'object',
-              $ref: '#/definitions/Timer Response',
+              $ref: '#/definitions/Success Timer Response',
+            },
+          },
+          204: {
+            description: 'Fail - Code will be 200, (TODO: change to 204)',
+            schema: {
+              type: 'object',
+              $ref: '#/definitions/Fail Timer Response',
             },
           },
         },
@@ -124,7 +148,14 @@ export default {
             description: 'OK',
             schema: {
               type: 'object',
-              $ref: '#/definitions/Timer Response',
+              $ref: '#/definitions/Success Timer Response',
+            },
+          },
+          204: {
+            description: 'Fail - Code will be 200, (TODO: change to 204)',
+            schema: {
+              type: 'object',
+              $ref: '#/definitions/Fail Timer Response',
             },
           },
         },
@@ -151,7 +182,14 @@ export default {
             description: 'OK',
             schema: {
               type: 'object',
-              $ref: '#/definitions/Timer Response',
+              $ref: '#/definitions/Success Timer Response',
+            },
+          },
+          204: {
+            description: 'Fail - Code will be 200, (TODO: change to 204)',
+            schema: {
+              type: 'object',
+              $ref: '#/definitions/Fail Timer Response',
             },
           },
         },
@@ -178,7 +216,14 @@ export default {
             description: 'OK',
             schema: {
               type: 'object',
-              $ref: '#/definitions/Timer Response',
+              $ref: '#/definitions/Success Timer Response',
+            },
+          },
+          204: {
+            description: 'Fail - Code will be 200, (TODO: change to 204)',
+            schema: {
+              type: 'object',
+              $ref: '#/definitions/Fail Timer Response',
             },
           },
         },
@@ -205,7 +250,14 @@ export default {
             description: 'OK',
             schema: {
               type: 'object',
-              $ref: '#/definitions/Timer Response',
+              $ref: '#/definitions/Success Timer Response',
+            },
+          },
+          204: {
+            description: 'Fail - Code will be 200, (TODO: change to 204)',
+            schema: {
+              type: 'object',
+              $ref: '#/definitions/Fail Timer Response',
             },
           },
         },
@@ -285,10 +337,9 @@ export default {
         },
       },
     },
-
     '/api/timer/preferences/subscribe': {
       post: {
-        tags: ['Timer Preferences'],
+        tags: ['Service Subscription'],
         summary: 'Subscribe user to timer service',
         parameters: [
           {
@@ -313,10 +364,9 @@ export default {
         },
       },
     },
-
     '/api/timer/preferences/unsubscribe': {
       delete: {
-        tags: ['Timer Preferences'],
+        tags: ['Service Subscription'],
         summary: 'Unsubscribe user of timer service',
         parameters: [
           {
@@ -351,7 +401,7 @@ export default {
   },
 
   definitions: {
-    'Timer Response': {
+    'Success Timer Response': {
       type: 'object',
       properties: {
         message: {
@@ -388,6 +438,32 @@ export default {
               type: 'integer',
             },
           },
+        },
+        success: {
+          type: 'boolean',
+        },
+      },
+    },
+
+    'Fail Timer Response': {
+      type: 'object',
+      properties: {
+        message: {
+          type: 'string',
+        },
+        status: {
+          type: 'object',
+          properties: {
+            lastState: {
+              type: 'string',
+            },
+            currentState: {
+              type: 'string',
+            },
+          },
+        },
+        success: {
+          type: 'boolean',
         },
       },
     },
