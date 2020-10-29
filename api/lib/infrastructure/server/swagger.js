@@ -2,14 +2,21 @@ export default {
   swagger: '2.0',
   info: {
     version: '1.0.0',
-    title: 'TOS logic server',
+    title: 'Timer Service API',
     description: 'Tamandua Open Source project',
   },
 
   tags: [
     {
       name: 'Timer',
-      description: 'API for timer logic',
+      description: 'API for timer service',
+    },
+    {
+      name: 'Timer Preferences',
+      description: 'API for timer service preferences',
+    },
+    {
+      name: 'Service Subscription',
     },
   ],
 
@@ -39,7 +46,14 @@ export default {
             description: 'OK',
             schema: {
               type: 'object',
-              $ref: '#/definitions/Timer Response',
+              $ref: '#/definitions/Success Timer Response',
+            },
+          },
+          204: {
+            description: 'Fail - Code will be 200, (TODO: change to 204)',
+            schema: {
+              type: 'object',
+              $ref: '#/definitions/Fail Timer Response',
             },
           },
         },
@@ -66,7 +80,14 @@ export default {
             description: 'OK',
             schema: {
               type: 'object',
-              $ref: '#/definitions/Timer Response',
+              $ref: '#/definitions/Success Timer Response',
+            },
+          },
+          204: {
+            description: 'Fail - Code will be 200, (TODO: change to 204)',
+            schema: {
+              type: 'object',
+              $ref: '#/definitions/Fail Timer Response',
             },
           },
         },
@@ -93,7 +114,14 @@ export default {
             description: 'OK',
             schema: {
               type: 'object',
-              $ref: '#/definitions/Timer Response',
+              $ref: '#/definitions/Success Timer Response',
+            },
+          },
+          204: {
+            description: 'Fail - Code will be 200, (TODO: change to 204)',
+            schema: {
+              type: 'object',
+              $ref: '#/definitions/Fail Timer Response',
             },
           },
         },
@@ -120,7 +148,14 @@ export default {
             description: 'OK',
             schema: {
               type: 'object',
-              $ref: '#/definitions/Timer Response',
+              $ref: '#/definitions/Success Timer Response',
+            },
+          },
+          204: {
+            description: 'Fail - Code will be 200, (TODO: change to 204)',
+            schema: {
+              type: 'object',
+              $ref: '#/definitions/Fail Timer Response',
             },
           },
         },
@@ -147,7 +182,14 @@ export default {
             description: 'OK',
             schema: {
               type: 'object',
-              $ref: '#/definitions/Timer Response',
+              $ref: '#/definitions/Success Timer Response',
+            },
+          },
+          204: {
+            description: 'Fail - Code will be 200, (TODO: change to 204)',
+            schema: {
+              type: 'object',
+              $ref: '#/definitions/Fail Timer Response',
             },
           },
         },
@@ -174,7 +216,14 @@ export default {
             description: 'OK',
             schema: {
               type: 'object',
-              $ref: '#/definitions/Timer Response',
+              $ref: '#/definitions/Success Timer Response',
+            },
+          },
+          204: {
+            description: 'Fail - Code will be 200, (TODO: change to 204)',
+            schema: {
+              type: 'object',
+              $ref: '#/definitions/Fail Timer Response',
             },
           },
         },
@@ -201,7 +250,149 @@ export default {
             description: 'OK',
             schema: {
               type: 'object',
-              $ref: '#/definitions/Timer Response',
+              $ref: '#/definitions/Success Timer Response',
+            },
+          },
+          204: {
+            description: 'Fail - Code will be 200, (TODO: change to 204)',
+            schema: {
+              type: 'object',
+              $ref: '#/definitions/Fail Timer Response',
+            },
+          },
+        },
+      },
+    },
+
+    '/api/timer/preferences': {
+      get: {
+        tags: ['Timer Preferences'],
+        summary: 'Get timer preferences',
+        parameters: [
+          {
+            in: 'header',
+            name: 'authorization',
+            description: 'Token used to authenticate the user',
+            required: false,
+            schema: {
+              type: 'string',
+            },
+          },
+        ],
+        produces: ['application/json'],
+        responses: {
+          200: {
+            description: 'OK',
+            schema: {
+              type: 'object',
+              $ref: '#/definitions/Timer Preferences',
+            },
+          },
+        },
+      },
+      patch: {
+        tags: ['Timer Preferences'],
+        summary: 'Patch timer preferences',
+        parameters: [
+          {
+            in: 'header',
+            name: 'authorization',
+            description: 'Token used to authenticate the user',
+            required: false,
+            schema: {
+              type: 'string',
+            },
+          },
+          {
+            in: 'body',
+            name: 'info',
+            description: 'Info to be patched',
+            required: false,
+            schema: {
+              type: 'object',
+              properties: {
+                fcmToken: { type: 'string' },
+                startTime: { type: 'string' },
+                breakDuration: { type: 'integer' },
+                breakLimitDuration: { type: 'integer' },
+                breakIdleLimitDuration: { type: 'integer' },
+                workDuration: { type: 'integer' },
+                workLimitDuration: { type: 'integer' },
+                workIdleLimitDuration: { type: 'integer' },
+                pauseLimitDuration: { type: 'integer' },
+                pauseIdleLimitDuration: { type: 'integer' },
+              },
+            },
+          },
+        ],
+        produces: ['application/json'],
+        responses: {
+          200: {
+            description: 'OK',
+            schema: {
+              type: 'object',
+              $ref: '#/definitions/Timer Preferences',
+            },
+          },
+        },
+      },
+    },
+    '/api/timer/preferences/subscribe': {
+      post: {
+        tags: ['Service Subscription'],
+        summary: 'Subscribe user to timer service',
+        parameters: [
+          {
+            in: 'header',
+            name: 'authorization',
+            description: 'Token used to authenticate the user',
+            required: false,
+            schema: {
+              type: 'string',
+            },
+          },
+        ],
+        produces: ['application/json'],
+        responses: {
+          200: {
+            description: 'OK',
+            schema: {
+              type: 'object',
+              $ref: '#/definitions/Timer Preferences',
+            },
+          },
+        },
+      },
+    },
+    '/api/timer/preferences/unsubscribe': {
+      delete: {
+        tags: ['Service Subscription'],
+        summary: 'Unsubscribe user of timer service',
+        parameters: [
+          {
+            in: 'header',
+            name: 'authorization',
+            description: 'Token used to authenticate the user',
+            required: false,
+            schema: {
+              type: 'string',
+            },
+          },
+        ],
+        produces: ['application/json'],
+        responses: {
+          200: {
+            description: 'OK',
+            schema: {
+              type: 'object',
+              properties: {
+                message: {
+                  type: 'string',
+                },
+                UserId: {
+                  type: 'string',
+                },
+              },
             },
           },
         },
@@ -210,7 +401,7 @@ export default {
   },
 
   definitions: {
-    'Timer Response': {
+    'Success Timer Response': {
       type: 'object',
       properties: {
         message: {
@@ -245,6 +436,103 @@ export default {
             },
             millisecondsToInactive: {
               type: 'integer',
+            },
+          },
+        },
+        success: {
+          type: 'boolean',
+        },
+      },
+    },
+
+    'Fail Timer Response': {
+      type: 'object',
+      properties: {
+        message: {
+          type: 'string',
+        },
+        status: {
+          type: 'object',
+          properties: {
+            lastState: {
+              type: 'string',
+            },
+            currentState: {
+              type: 'string',
+            },
+          },
+        },
+        success: {
+          type: 'boolean',
+        },
+      },
+    },
+
+    'Timer Preferences': {
+      type: 'object',
+      properties: {
+        message: {
+          type: 'string',
+        },
+        preferences: {
+          type: 'object',
+          properties: {
+            id: {
+              type: 'integer',
+            },
+            UserId: {
+              type: 'string',
+            },
+            fcmToken: {
+              type: 'string',
+            },
+            startTime: {
+              type: 'string',
+            },
+            breakDuration: {
+              type: 'integer',
+            },
+            breakLimitDuration: {
+              type: 'integer',
+            },
+            breakIdleLimitDuration: {
+              type: 'integer',
+            },
+            lastBreakStartTime: {
+              type: 'string',
+            },
+            workDuration: {
+              type: 'integer',
+            },
+            workLimitDuration: {
+              type: 'integer',
+            },
+            workIdleLimitDuration: {
+              type: 'integer',
+            },
+            lastWorkStartTime: {
+              type: 'string',
+            },
+            pauseLimitDuration: {
+              type: 'integer',
+            },
+            pauseIdleLimitDuration: {
+              type: 'integer',
+            },
+            lastPauseStartTime: {
+              type: 'string',
+            },
+            currentState: {
+              type: 'string',
+            },
+            lastState: {
+              type: 'string',
+            },
+            createdAt: {
+              type: 'string',
+            },
+            updatedAt: {
+              type: 'string',
             },
           },
         },

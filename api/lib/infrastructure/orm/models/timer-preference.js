@@ -3,17 +3,10 @@
 const { Model } = require('sequelize')
 
 module.exports = (sequelize, DataTypes) => {
-  class UserPreference extends Model {
-    static associate(models) {
-      UserPreference.belongsTo(models.User)
-      UserPreference.hasOne(models.UserPreferenceWeeklyWorkActivity)
-      UserPreference.hasOne(models.UserPreferenceWeeklyStretchActivity)
-      UserPreference.hasOne(models.UserPreferenceGoal)
-      UserPreference.belongsTo(models.UserPreferenceTimeType)
-      UserPreference.belongsTo(models.UserPreferenceStartPeriod)
-    }
+  class TimerPreference extends Model {
+    static associate(models) {}
   }
-  UserPreference.init(
+  TimerPreference.init(
     {
       id: {
         type: DataTypes.INTEGER,
@@ -26,21 +19,13 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         unique: true,
       },
-      UserPreferenceTimeTypeId: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        unique: true,
-      },
-      UserPreferenceStartPeriodId: {
-        type: DataTypes.INTEGER,
-        unique: true,
-      },
       fcmToken: {
         type: DataTypes.STRING,
         allowNull: true,
       },
       startTime: {
         type: DataTypes.DATE,
+        allowNull: false,
       },
       breakDuration: {
         type: DataTypes.INTEGER,
@@ -105,8 +90,8 @@ module.exports = (sequelize, DataTypes) => {
     },
     {
       sequelize,
-      modelName: 'UserPreference',
+      modelName: 'TimerPreference',
     }
   )
-  return UserPreference
+  return TimerPreference
 }

@@ -3,8 +3,8 @@ class StartTimerUseCase {
     this.stateMachineFacade = stateMachineFacade
   }
 
-  async execute(userId) {
-    return await this.stateMachineFacade.onStart({ userId })
+  async execute({ userId, idToken }) {
+    return await this.stateMachineFacade.onStart({ userId, idToken })
   }
 }
 

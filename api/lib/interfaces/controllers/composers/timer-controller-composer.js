@@ -1,8 +1,10 @@
 import TimerController from '../timer-controller'
-import UserRepository from '../../../infrastructure/repositories/user-repository'
+import TimerPreferencesRepository from '../../../infrastructure/repositories/timer-preferences-repository'
 import StateMachineFacade from '../../../infrastructure/facades/state-machine-facade'
 import SchedulingFacade from '../../../infrastructure/facades/scheduling-facade'
 import FirebaseAdminFacade from '../../../infrastructure/facades/firebase-admin-facade'
+import AnalyticsServiceFacade from '../../../infrastructure/facades/analytics-service-facade'
+import PushMessageRepository from '../../../infrastructure/repositories/push-message-repository'
 
 import {
   StartTimerUseCase,
@@ -17,14 +19,18 @@ import {
 class TimerControllerComposer {
   static compose() {
     const firebaseAdminFacade = new FirebaseAdminFacade()
-    const userRepository = new UserRepository()
+    const timerPreferencesRepository = new TimerPreferencesRepository()
+    const analyticsServiceFacade = new AnalyticsServiceFacade()
+    const pushMessageRepository = new PushMessageRepository()
     const schedulingFacade = new SchedulingFacade({
       firebaseAdminFacade,
       stateMachineFacade: null,
     })
     const stateMachineFacade = new StateMachineFacade({
-      userRepository,
+      timerPreferencesRepository,
       schedulingFacade,
+      analyticsServiceFacade,
+      pushMessageRepository,
     })
     schedulingFacade.assignStateMachineFacade({ stateMachineFacade })
 

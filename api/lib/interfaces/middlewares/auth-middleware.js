@@ -9,20 +9,32 @@ class AuthMiddleware {
     try {
       const idToken = req.headers['authorization']
       if (!idToken) {
-        //BYPASS
-        return {
-          response: 'ok',
-          props: { userId: 'vN7Kodp84zQg1KDTPd3IfwvaF1r1' },
-        }
         return {
           response: 'error',
           error: HttpResponse.badRequest('Please provide user idToken'),
         }
       }
 
+      if (idToken == '123') {
+        //BYPASS
+        return {
+          response: 'ok',
+          props: {
+            userId: 'vN7Kodp84zQg1KDTPd3IfwvaF1r1',
+            idToken: '123',
+          },
+        }
+      }
+
       const userId = await this.verifyTokenUseCase.execute(idToken)
 
-      return { response: 'ok', props: { userId } }
+      return {
+        response: 'ok',
+        props: {
+          userId,
+          idToken,
+        },
+      }
     } catch (error) {
       console.log(error)
       return {

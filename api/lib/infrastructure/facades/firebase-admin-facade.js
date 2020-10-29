@@ -9,7 +9,7 @@ class FirebaseAdminFacade {
       credential: firebaseAdmin.credential.cert(
         JSON.parse(process.env.GOOGLE_APPLICATION_CREDENTIALS)
       ),
-      databaseURL: 'https://flexibe-macro.firebaseio.com',
+      databaseURL: process.env.FIREBASE_DB_URL,
     })
   }
 
@@ -20,7 +20,7 @@ class FirebaseAdminFacade {
 
   async send({ title, body, category, fcmToken }) {
     console.log(
-      '[FIREBASE_ADMIN_FACADE] - sending message: ' +
+      '[FIREBASE-ADMIN-FACADE] - sending message: ' +
         category +
         ' - ' +
         title +

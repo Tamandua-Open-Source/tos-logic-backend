@@ -3,8 +3,8 @@ class PauseTimerUseCase {
     this.stateMachineFacade = stateMachineFacade
   }
 
-  async execute(userId) {
-    return await this.stateMachineFacade.onPause({ userId })
+  async execute({ userId, idToken }) {
+    return await this.stateMachineFacade.onPause({ userId, idToken })
   }
 }
 

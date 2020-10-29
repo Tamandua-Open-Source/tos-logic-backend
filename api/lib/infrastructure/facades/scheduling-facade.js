@@ -21,7 +21,7 @@ class SchedulingFacade extends ISchedulingFacade {
 
     this.notificationQueue.process(async (job) => {
       console.log(
-        '[SCHEDULING_FACADE](notificationQueue) - Processing Job - ' +
+        '[SCHEDULING-FACADE](notificationQueue) - Processing Job - ' +
           'Id:' +
           job.id +
           ' | Title: ' +
@@ -40,7 +40,7 @@ class SchedulingFacade extends ISchedulingFacade {
 
     this.stateQueue.process(async (job) => {
       console.log(
-        '[SCHEDULING_FACADE](stateQueue) - Processing Job - ' +
+        '[SCHEDULING-FACADE](stateQueue) - Processing Job - ' +
           'Id: ' +
           job.id +
           ' | State: ' +
@@ -51,21 +51,25 @@ class SchedulingFacade extends ISchedulingFacade {
         case this.stateMachineFacade.workIdleState:
           return this.stateMachineFacade.onWorkIdle({
             userId: job.data.userId,
+            idToken: job.data.idToken,
           })
         case this.stateMachineFacade.breakIdleState:
           return this.stateMachineFacade.onBreakIdle({
             userId: job.data.userId,
+            idToken: job.data.idToken,
           })
         case this.stateMachineFacade.pauseIdleState:
           return this.stateMachineFacade.onPauseIdle({
             userId: job.data.userId,
+            idToken: job.data.idToken,
           })
         case this.stateMachineFacade.inactiveState:
           return this.stateMachineFacade.onInactive({
             userId: job.data.userId,
+            idToken: job.data.idToken,
           })
         default:
-          console.log('Erro aqui')
+          console.log('Erro')
       }
     })
   }
@@ -83,7 +87,7 @@ class SchedulingFacade extends ISchedulingFacade {
 
     await this.notificationQueue.removeJobs(pattern).then(async function () {
       console.log(
-        '[SCHEDULING_FACADE](notificationQueue) - Removing scheduled jobs for userId: ' +
+        '[SCHEDULING-FACADE](notificationQueue) - Removing scheduled jobs for userId: ' +
           userId
       )
       return
@@ -95,7 +99,7 @@ class SchedulingFacade extends ISchedulingFacade {
 
     await this.stateQueue.removeJobs(pattern).then(async function () {
       console.log(
-        '[SCHEDULING_FACADE](stateQueue) - Removing scheduled jobs for userId: ' +
+        '[SCHEDULING-FACADE](stateQueue) - Removing scheduled jobs for userId: ' +
           userId
       )
       return
@@ -120,7 +124,7 @@ class SchedulingFacade extends ISchedulingFacade {
     this.notificationQueue.add(data, options)
 
     console.log(
-      '[SCHEDULING_FACADE](notificationQueue) - job scheduled - ' +
+      '[SCHEDULING-FACADE](notificationQueue) - job scheduled - ' +
         'Id: ' +
         options.jobId +
         ' | Title: ' +
@@ -130,9 +134,10 @@ class SchedulingFacade extends ISchedulingFacade {
     )
   }
 
-  scheduleState({ userId, state, delay }) {
+  scheduleState({ userId, idToken, state, delay }) {
     const data = {
       userId,
+      idToken,
       state,
     }
 
@@ -145,7 +150,7 @@ class SchedulingFacade extends ISchedulingFacade {
     this.stateQueue.add(data, options)
 
     console.log(
-      '[SCHEDULING_FACADE](stateQueue) - job scheduled -' +
+      '[SCHEDULING-FACADE](stateQueue) - job scheduled -' +
         'Id: ' +
         options.jobId +
         ' | State: ' +

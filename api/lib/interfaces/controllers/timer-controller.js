@@ -6,7 +6,7 @@ class TimerController {
   }
 
   async startTimer(req) {
-    const { userId } = req.props
+    const { userId, idToken } = req.props
 
     if (!userId) {
       return HttpResponse.serverError()
@@ -14,15 +14,23 @@ class TimerController {
 
     try {
       const { startTimerUseCase } = this.useCases
-      const status = await startTimerUseCase.execute(userId)
+      const response = await startTimerUseCase.execute({
+        userId,
+        idToken,
+      })
 
-      if (status) {
+      if (response.success === true) {
         return HttpResponse.ok({
           message: 'State changed successfully',
-          status,
+          status: response.status,
+          success: response.success,
         })
       } else {
-        return HttpResponse.ok({ message: 'The state cannot be changed' })
+        return HttpResponse.ok({
+          message: 'The state cannot be changed',
+          status: response.status,
+          success: response.success,
+        })
       }
     } catch (error) {
       console.log(error)
@@ -31,7 +39,7 @@ class TimerController {
   }
 
   async finishTimer(req) {
-    const { userId } = req.props
+    const { userId, idToken } = req.props
 
     if (!userId) {
       return HttpResponse.serverError()
@@ -39,15 +47,23 @@ class TimerController {
 
     try {
       const { finishTimerUseCase } = this.useCases
-      const status = await finishTimerUseCase.execute(userId)
+      const response = await finishTimerUseCase.execute({
+        userId,
+        idToken,
+      })
 
-      if (status) {
+      if (response.success === true) {
         return HttpResponse.ok({
           message: 'State changed successfully',
-          status,
+          status: response.status,
+          success: response.success,
         })
       } else {
-        return HttpResponse.ok({ message: 'The state cannot be changed' })
+        return HttpResponse.ok({
+          message: 'The state cannot be changed',
+          status: response.status,
+          success: response.success,
+        })
       }
     } catch (error) {
       console.log(error)
@@ -56,7 +72,7 @@ class TimerController {
   }
 
   async workTimer(req) {
-    const { userId } = req.props
+    const { userId, idToken } = req.props
 
     if (!userId) {
       return HttpResponse.serverError()
@@ -64,15 +80,23 @@ class TimerController {
 
     try {
       const { workTimerUseCase } = this.useCases
-      const status = await workTimerUseCase.execute(userId)
+      const response = await workTimerUseCase.execute({
+        userId,
+        idToken,
+      })
 
-      if (status) {
+      if (response.success === true) {
         return HttpResponse.ok({
           message: 'State changed successfully',
-          status,
+          status: response.status,
+          success: response.success,
         })
       } else {
-        return HttpResponse.ok({ message: 'The state cannot be changed' })
+        return HttpResponse.ok({
+          message: 'The state cannot be changed',
+          status: response.status,
+          success: response.success,
+        })
       }
     } catch (error) {
       console.log(error)
@@ -81,7 +105,7 @@ class TimerController {
   }
 
   async breakTimer(req) {
-    const { userId } = req.props
+    const { userId, idToken } = req.props
 
     if (!userId) {
       return HttpResponse.serverError()
@@ -89,15 +113,23 @@ class TimerController {
 
     try {
       const { breakTimerUseCase } = this.useCases
-      const status = await breakTimerUseCase.execute(userId)
+      const response = await breakTimerUseCase.execute({
+        userId,
+        idToken,
+      })
 
-      if (status) {
+      if (response.success === true) {
         return HttpResponse.ok({
           message: 'State changed successfully',
-          status,
+          status: response.status,
+          success: response.success,
         })
       } else {
-        return HttpResponse.ok({ message: 'The state cannot be changed' })
+        return HttpResponse.ok({
+          message: 'The state cannot be changed',
+          status: response.status,
+          success: response.success,
+        })
       }
     } catch (error) {
       console.log(error)
@@ -106,7 +138,7 @@ class TimerController {
   }
 
   async pauseTimer(req) {
-    const { userId } = req.props
+    const { userId, idToken } = req.props
 
     if (!userId) {
       return HttpResponse.serverError()
@@ -114,15 +146,23 @@ class TimerController {
 
     try {
       const { pauseTimerUseCase } = this.useCases
-      const status = await pauseTimerUseCase.execute(userId)
+      const response = await pauseTimerUseCase.execute({
+        userId,
+        idToken,
+      })
 
-      if (status) {
+      if (response.success === true) {
         return HttpResponse.ok({
           message: 'State changed successfully',
-          status,
+          status: response.status,
+          success: response.success,
         })
       } else {
-        return HttpResponse.ok({ message: 'The state cannot be changed' })
+        return HttpResponse.ok({
+          message: 'The state cannot be changed',
+          status: response.status,
+          success: response.success,
+        })
       }
     } catch (error) {
       console.log(error)
@@ -131,7 +171,7 @@ class TimerController {
   }
 
   async resumeTimer(req) {
-    const { userId } = req.props
+    const { userId, idToken } = req.props
 
     if (!userId) {
       return HttpResponse.serverError()
@@ -139,15 +179,23 @@ class TimerController {
 
     try {
       const { resumeTimerUseCase } = this.useCases
-      const status = await resumeTimerUseCase.execute(userId)
+      const response = await resumeTimerUseCase.execute({
+        userId,
+        idToken,
+      })
 
-      if (status) {
+      if (response.success === true) {
         return HttpResponse.ok({
           message: 'State changed successfully',
-          status,
+          status: response.status,
+          success: response.success,
         })
       } else {
-        return HttpResponse.ok({ message: 'The state cannot be changed' })
+        return HttpResponse.ok({
+          message: 'The state cannot be changed',
+          status: response.status,
+          success: response.success,
+        })
       }
     } catch (error) {
       console.log(error)
@@ -156,7 +204,7 @@ class TimerController {
   }
 
   async statusTimer(req) {
-    const { userId } = req.props
+    const { userId, idToken } = req.props
 
     if (!userId) {
       return HttpResponse.serverError()
@@ -164,16 +212,21 @@ class TimerController {
 
     try {
       const { statusTimerUseCase } = this.useCases
-      const status = await statusTimerUseCase.execute(userId)
+      const status = await statusTimerUseCase.execute({
+        userId,
+        idToken,
+      })
 
       if (status) {
         return HttpResponse.ok({
           message: 'Timer status retrieved successfully',
           status,
+          success: true,
         })
       } else {
         return HttpResponse.ok({
           message: 'Timer status cannot be retrieved',
+          success: false,
         })
       }
     } catch (error) {
