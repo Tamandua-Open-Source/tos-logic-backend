@@ -37,7 +37,7 @@ router.post(
   )
 )
 
-router.post(
+router.delete(
   '/unsubscribe/:userId',
   ExpressMiddlewareAdapter.adapt((req) => apiKeyMiddleware.verifyApiKey(req)),
   ExpressRouterAdapter.adapt((req) =>
