@@ -264,6 +264,76 @@ export default {
       },
     },
 
+    //service subscription
+    '/api/timer/preferences/subscribe/{userId}': {
+      post: {
+        tags: ['Service Subscription'],
+        summary: 'Subscribe user to timer service with api key',
+        parameters: [
+          {
+            in: 'header',
+            name: 'authorization',
+            description: 'Api key',
+            required: false,
+            schema: {
+              type: 'string',
+            },
+          },
+          {
+            in: 'path',
+            name: 'userId',
+            schema: {
+              type: 'string',
+            },
+          },
+        ],
+        produces: ['application/json'],
+        responses: {
+          200: {
+            description: 'OK',
+            schema: {
+              type: 'object',
+              $ref: '#/definitions/Timer Preferences',
+            },
+          },
+        },
+      },
+    },
+    '/api/timer/preferences/unsubscribe/{userId}': {
+      delete: {
+        tags: ['Service Subscription'],
+        summary: 'Unubscribe user from timer service with api key',
+        parameters: [
+          {
+            in: 'header',
+            name: 'authorization',
+            description: 'Api key',
+            required: false,
+            schema: {
+              type: 'string',
+            },
+          },
+          {
+            in: 'path',
+            name: 'userId',
+            schema: {
+              type: 'string',
+            },
+          },
+        ],
+        produces: ['application/json'],
+        responses: {
+          200: {
+            description: 'OK',
+            schema: {
+              type: 'object',
+              $ref: '#/definitions/Timer Preferences',
+            },
+          },
+        },
+      },
+    },
+
     '/api/timer/preferences': {
       get: {
         tags: ['Timer Preferences'],

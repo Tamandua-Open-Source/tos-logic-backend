@@ -5,6 +5,53 @@ class TimerPreferencesController {
     this.useCases = useCases
   }
 
+  async subscribeUserPreferencesByUserId(req) {
+    const { userId } = req.params
+
+    try {
+      const { createTimerPreferencesUseCase } = this.useCases
+      const preferences = await createTimerPreferencesUseCase.execute(userId)
+
+      if (!preferences) {
+        return HttpResponse.ok({
+          message: 'User is already subscribed to service',
+        })
+      } else {
+        return HttpResponse.ok({
+          message: 'Preferences Created',
+          preferences,
+        })
+      }
+    } catch (error) {
+      console.log(error)
+      return HttpResponse.serverError()
+    }
+  }
+
+  async unsubscribeUserPreferencesByUserId(req) {
+    const { userId } = req.params
+
+    try {
+      const { deleteTimerPreferencesUseCase } = this.useCases
+      const preferences = await deleteTimerPreferencesUseCase.execute(userId)
+
+      if (!preferences) {
+        return HttpResponse.ok({
+          message: 'User already deleted',
+          UserId: userId,
+        })
+      } else {
+        return HttpResponse.ok({
+          message: 'Preferences Deleted',
+          UserId: userId,
+        })
+      }
+    } catch (error) {
+      console.log(error)
+      return HttpResponse.serverError()
+    }
+  }
+
   async createUserPreferences(req) {
     const { userId } = req.props
 
