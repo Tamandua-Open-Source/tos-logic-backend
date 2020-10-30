@@ -1,22 +1,21 @@
 import db from '../orm/models'
-import ITimerPreferencesRepository from '../../application/repository-interfaces/i-timer-preferences-repository'
 
-class TimerPreferencesRepository extends ITimerPreferencesRepository {
+class TimerPreferencesRepository {
   async createTimerPreferences(userId) {
     return await db.TimerPreference.create({
       UserId: userId,
       fcmToken: null,
       startTime: new Date(),
-      breakDuration: 5000,
-      breakLimitDuration: 15000,
-      breakIdleLimitDuration: 10000,
+      breakDuration: 900000, // 15 min
+      breakLimitDuration: 1200000, // 20 min
+      breakIdleLimitDuration: 300000, // 5 min
       lastBreakStartTime: new Date(),
-      workDuration: 5000,
-      workLimitDuration: 15000,
-      workIdleLimitDuration: 10000,
+      workDuration: 5400000, // 90 min
+      workLimitDuration: 6000000, //100 min
+      workIdleLimitDuration: 600000, //10 min
       lastWorkStartTime: new Date(),
-      pauseLimitDuration: 15000,
-      pauseIdleLimitDuration: 10000,
+      pauseLimitDuration: 3600000, // 60 min
+      pauseIdleLimitDuration: 5400000, //90 min
       lastPauseStartTime: new Date(),
       currentState: 'INACTIVE',
       lastState: 'INACTIVE',
