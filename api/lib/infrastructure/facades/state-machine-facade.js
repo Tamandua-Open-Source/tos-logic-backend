@@ -1,13 +1,10 @@
-import IStateMachineFacade from '../../application/facade-interfaces/i-state-machine-facade'
-
-class StateMachineFacade extends IStateMachineFacade {
+class StateMachineFacade {
   constructor({
     timerPreferencesRepository,
     schedulingFacade,
     analyticsServiceFacade,
     pushMessageRepository,
   }) {
-    super()
     this.timerPreferencesRepository = timerPreferencesRepository
     this.schedulingFacade = schedulingFacade
     this.analyticsServiceFacade = analyticsServiceFacade
@@ -53,7 +50,7 @@ class StateMachineFacade extends IStateMachineFacade {
     return [this.pauseState, this.pauseIdleState].includes(currentState)
   }
 
-  async onStart({ userId, idToken }) {
+  async onStart({ userId }) {
     const preferences = await this.timerPreferencesRepository.getTimerPreferences(
       userId
     )
@@ -80,12 +77,12 @@ class StateMachineFacade extends IStateMachineFacade {
         currentState: this.workState,
       }),
 
-      this.analyticsServiceFacade.logStartCycle({ idToken }),
+      this.analyticsServiceFacade.logStartCycle({ userId }),
       this.schedulingFacade.removeJobsOnNotificationQueue({ userId }),
       this.schedulingFacade.removeJobsOnStateQueue({ userId }),
     ])
 
-    this.analyticsServiceFacade.logWork({ idToken })
+    this.analyticsServiceFacade.logWork({ userId })
 
     const millisecondsToInactive =
       preferences.workLimitDuration + preferences.workIdleLimitDuration
@@ -103,7 +100,6 @@ class StateMachineFacade extends IStateMachineFacade {
     //WORK_IDLE
     this.schedulingFacade.scheduleState({
       userId: userId,
-      idToken: idToken,
       state: this.workIdleState,
       delay: preferences.workLimitDuration,
     })
@@ -124,7 +120,7 @@ class StateMachineFacade extends IStateMachineFacade {
     }
   }
 
-  async onFinish({ userId, idToken, fromIdleState }) {
+  async onFinish({ userId, fromIdleState }) {
     const preferences = await this.timerPreferencesRepository.getTimerPreferences(
       userId
     )
@@ -152,7 +148,7 @@ class StateMachineFacade extends IStateMachineFacade {
         currentState: this.inactiveState,
       }),
 
-      this.analyticsServiceFacade.logFinish({ idToken }),
+      this.analyticsServiceFacade.logFinish({ userId }),
       this.schedulingFacade.removeJobsOnNotificationQueue({ userId }),
       this.schedulingFacade.removeJobsOnStateQueue({ userId }),
     ])
@@ -168,7 +164,7 @@ class StateMachineFacade extends IStateMachineFacade {
       body: pushMessage[0].body || '',
       category: pushMessage[0].category || '',
       fcmToken: preferences.fcmToken,
-      delay: 5000 ?? millisecondsToStartCycle, //DEBUG: Retirar o '?? delay' para iniciar no próximo dia
+      delay: millisecondsToStartCycle, //DEBUG: Retirar o '?? delay' para iniciar no próximo dia
     })
 
     return {
@@ -187,7 +183,7 @@ class StateMachineFacade extends IStateMachineFacade {
     }
   }
 
-  async onWork({ userId, idToken, elapsedDuration }) {
+  async onWork({ userId, elapsedDuration }) {
     const preferences = await this.timerPreferencesRepository.getTimerPreferences(
       userId
     )
@@ -216,7 +212,7 @@ class StateMachineFacade extends IStateMachineFacade {
         currentState: this.workState,
       }),
 
-      this.analyticsServiceFacade.logWork({ idToken }),
+      this.analyticsServiceFacade.logWork({ userId }),
       this.schedulingFacade.removeJobsOnNotificationQueue({ userId }),
       this.schedulingFacade.removeJobsOnStateQueue({ userId }),
     ])
@@ -243,7 +239,6 @@ class StateMachineFacade extends IStateMachineFacade {
     //WORK_IDLE
     this.schedulingFacade.scheduleState({
       userId: userId,
-      idToken: idToken,
       state: this.workIdleState,
       delay: millisecondsToWorkIdle,
     })
@@ -264,7 +259,7 @@ class StateMachineFacade extends IStateMachineFacade {
     }
   }
 
-  async onBreak({ userId, idToken, elapsedDuration }) {
+  async onBreak({ userId, elapsedDuration }) {
     const preferences = await this.timerPreferencesRepository.getTimerPreferences(
       userId
     )
@@ -293,7 +288,7 @@ class StateMachineFacade extends IStateMachineFacade {
         currentState: this.breakState,
       }),
 
-      this.analyticsServiceFacade.logBreak({ idToken }),
+      this.analyticsServiceFacade.logBreak({ userId }),
       this.schedulingFacade.removeJobsOnNotificationQueue({ userId }),
       this.schedulingFacade.removeJobsOnStateQueue({ userId }),
     ])
@@ -320,7 +315,6 @@ class StateMachineFacade extends IStateMachineFacade {
     //BREAK_IDLE
     this.schedulingFacade.scheduleState({
       userId: userId,
-      idToken: idToken,
       state: this.breakIdleState,
       delay: millisecondsToBreakIdle,
     })
@@ -341,7 +335,7 @@ class StateMachineFacade extends IStateMachineFacade {
     }
   }
 
-  async onPause({ userId, idToken }) {
+  async onPause({ userId }) {
     const preferences = await this.timerPreferencesRepository.getTimerPreferences(
       userId
     )
@@ -364,7 +358,7 @@ class StateMachineFacade extends IStateMachineFacade {
         currentState: this.pauseState,
       }),
 
-      this.analyticsServiceFacade.logPause({ idToken }),
+      this.analyticsServiceFacade.logPause({ userId }),
       this.schedulingFacade.removeJobsOnNotificationQueue({ userId }),
       this.schedulingFacade.removeJobsOnStateQueue({ userId }),
     ])
@@ -375,7 +369,6 @@ class StateMachineFacade extends IStateMachineFacade {
     //PAUSE_IDLE
     this.schedulingFacade.scheduleState({
       userId: userId,
-      idToken: idToken,
       state: this.pauseIdleState,
       delay: preferences.pauseLimitDuration,
     })
@@ -396,7 +389,7 @@ class StateMachineFacade extends IStateMachineFacade {
     }
   }
 
-  async onResume({ userId, idToken }) {
+  async onResume({ userId }) {
     const preferences = await this.timerPreferencesRepository.getTimerPreferences(
       userId
     )
@@ -413,7 +406,7 @@ class StateMachineFacade extends IStateMachineFacade {
     }
 
     const [] = await Promise.all([
-      this.analyticsServiceFacade.logResume({ idToken }),
+      this.analyticsServiceFacade.logResume({ userId }),
     ])
 
     if (preferences.lastState === this.workState) {
@@ -424,7 +417,6 @@ class StateMachineFacade extends IStateMachineFacade {
 
       return this.onWork({
         userId,
-        idToken,
         elapsedDuration,
       })
     } else if (preferences.lastState === this.breakState) {
@@ -435,13 +427,12 @@ class StateMachineFacade extends IStateMachineFacade {
 
       return this.onBreak({
         userId,
-        idToken,
         elapsedDuration,
       })
     }
   }
 
-  async onWorkIdle({ userId, idToken }) {
+  async onWorkIdle({ userId }) {
     const [preferences, pushMessage, patchedPreferences] = await Promise.all([
       this.timerPreferencesRepository.getTimerPreferences(userId),
 
@@ -453,7 +444,7 @@ class StateMachineFacade extends IStateMachineFacade {
         currentState: this.workIdleState,
       }),
 
-      this.analyticsServiceFacade.logWorkIdle({ idToken }),
+      this.analyticsServiceFacade.logWorkIdle({ userId }),
       this.schedulingFacade.removeJobsOnNotificationQueue({ userId }),
       this.schedulingFacade.removeJobsOnStateQueue({ userId }),
     ])
@@ -471,13 +462,12 @@ class StateMachineFacade extends IStateMachineFacade {
     //INACTIVE
     this.schedulingFacade.scheduleState({
       userId: userId,
-      idToken: idToken,
       state: this.inactiveState,
       delay: preferences.workIdleLimitDuration,
     })
   }
 
-  async onBreakIdle({ userId, idToken }) {
+  async onBreakIdle({ userId }) {
     const [preferences, pushMessage, patchedPreferences] = await Promise.all([
       this.timerPreferencesRepository.getTimerPreferences(userId),
 
@@ -489,7 +479,7 @@ class StateMachineFacade extends IStateMachineFacade {
         currentState: this.breakIdleState,
       }),
 
-      this.analyticsServiceFacade.logBreakIdle({ idToken }),
+      this.analyticsServiceFacade.logBreakIdle({ userId }),
       this.schedulingFacade.removeJobsOnNotificationQueue({ userId }),
       this.schedulingFacade.removeJobsOnStateQueue({ userId }),
     ])
@@ -507,13 +497,12 @@ class StateMachineFacade extends IStateMachineFacade {
     //INACTIVE
     this.schedulingFacade.scheduleState({
       userId: userId,
-      idToken: idToken,
       state: this.inactiveState,
       delay: preferences.breakIdleLimitDuration,
     })
   }
 
-  async onPauseIdle({ userId, idToken }) {
+  async onPauseIdle({ userId }) {
     const [preferences, pushMessage, patchedPreferences] = await Promise.all([
       this.timerPreferencesRepository.getTimerPreferences(userId),
 
@@ -525,7 +514,7 @@ class StateMachineFacade extends IStateMachineFacade {
         currentState: this.pauseIdleState,
       }),
 
-      this.analyticsServiceFacade.logPauseIdle({ idToken }),
+      this.analyticsServiceFacade.logPauseIdle({ userId }),
       this.schedulingFacade.removeJobsOnNotificationQueue({ userId }),
       this.schedulingFacade.removeJobsOnStateQueue({ userId }),
     ])
@@ -543,13 +532,12 @@ class StateMachineFacade extends IStateMachineFacade {
     //INACTIVE
     this.schedulingFacade.scheduleState({
       userId: userId,
-      idToken: idToken,
       state: this.inactiveState,
       delay: preferences.pauseIdleLimitDuration,
     })
   }
 
-  async onInactive({ userId, idToken }) {
+  async onInactive({ userId }) {
     const preferences = await this.timerPreferencesRepository.getTimerPreferences(
       userId
     )
@@ -564,7 +552,7 @@ class StateMachineFacade extends IStateMachineFacade {
         currentState: this.inactiveState,
       }),
 
-      this.analyticsServiceFacade.logInactive({ idToken }),
+      this.analyticsServiceFacade.logInactive({ userId }),
       this.schedulingFacade.removeJobsOnNotificationQueue({ userId }),
       this.schedulingFacade.removeJobsOnStateQueue({ userId }),
     ])
@@ -579,13 +567,65 @@ class StateMachineFacade extends IStateMachineFacade {
       delay: 0,
     })
 
-    this.onFinish({ userId, idToken, fromIdleState: true })
+    this.onFinish({ userId, fromIdleState: true })
   }
 
-  async onStatus({ userId, idToken }) {
+  async onStatus({ userId }) {
     const [preferences] = await Promise.all([
       this.timerPreferencesRepository.getTimerPreferences(userId),
     ])
+
+    var millisecondsToStartCycle = null
+    var millisecondsToNextBreak = null
+    var millisecondsToNextWork = null
+    var millisecondsToBreakIdle = null
+    var millisecondsToWorkIdle = null
+    var millisecondsToPauseIdle = null
+    var millisecondsToInactive = null
+
+    const nowTimestamp = new Date().getTime()
+
+    const lastWorkTimestamp = new Date(preferences.lastWorkStartTime).getTime()
+    const lastBreakTimestamp = new Date(
+      preferences.lastBreakStartTime
+    ).getTime()
+    const lastPauseTimestamp = new Date(
+      preferences.lastPauseStartTime
+    ).getTime()
+
+    const workDuration = preferences.workDuration
+    const workLimitDuration = preferences.workLimitDuration
+    const workIdleLimitDuration = preferences.workIdleLimitDuration
+
+    const breakDuration = preferences.breakDuration
+    const breakLimitDuration = preferences.breakLimitDuration
+    const breakIdleLimitDuration = preferences.breakIdleLimitDuration
+
+    const pauseLimitDuration = preferences.pauseLimitDuration
+    const pauseIdleLimitDuration = preferences.pauseIdleLimitDuration
+
+    switch (preferences.currentState) {
+      case this.workState:
+        // const lastPauseStartTime = new Date(preferences.lastPauseStartTime)
+        // const lastWorkStartTime = new Date(preferences.lastWorkStartTime)
+        // const elapsedDuration =
+        //   lastPauseStartTime.getTime() - lastWorkStartTime.getTime()
+
+        break
+      case this.breakState:
+        break
+      case this.pauseState:
+        break
+      case this.workIdleState:
+        break
+      case this.breakIdleState:
+        break
+      case this.pauseIdleState:
+        break
+
+      default:
+        break
+    }
 
     // const nowTimestamp = new Date().getTime()
     // const lastBreakTs = new Date(preferences.lastBreakStartTime).getTime()
@@ -596,13 +636,13 @@ class StateMachineFacade extends IStateMachineFacade {
     return {
       lastState: preferences.lastState,
       currentState: preferences.currentState,
-      millisecondsToStartCycle: null,
-      millisecondsToNextBreak: null,
-      millisecondsToNextWork: null,
-      millisecondsToBreakIdle: null,
-      millisecondsToWorkIdle: null,
-      millisecondsToPauseIdle: null,
-      millisecondsToInactive: null,
+      millisecondsToStartCycle,
+      millisecondsToNextBreak,
+      millisecondsToNextWork,
+      millisecondsToBreakIdle,
+      millisecondsToWorkIdle,
+      millisecondsToPauseIdle,
+      millisecondsToInactive,
     }
   }
 

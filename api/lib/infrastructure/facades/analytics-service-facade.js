@@ -6,16 +6,17 @@ dotenv.config()
 class AnalyticsServiceFacade {
   constructor() {
     this.base_url = process.env.ANALYTICS_URL
+    this.api_key = process.env.ANALYTICS_API_KEY
   }
 
-  async logBreakIdle({ idToken }) {
+  async addUserTimerAction({ userId, timerActionId }) {
     try {
       await axios.post(
-        `${this.base_url}/api/analytics/actions/breakIdle`,
+        `${this.base_url}/api/users/${userId}/timerActions/${timerActionId}`,
         {},
         {
           headers: {
-            Authorization: idToken,
+            Authorization: this.api_key,
           },
         }
       )
@@ -24,148 +25,74 @@ class AnalyticsServiceFacade {
     }
   }
 
-  async logBreak({ idToken }) {
-    try {
-      await axios.post(
-        `${this.base_url}/api/analytics/actions/break`,
-        {},
-        {
-          headers: {
-            Authorization: idToken,
-          },
-        }
-      )
-    } catch (error) {
-      console.log('[ANALYTICS-SERVICE-FACADE] - service unavailable: ', error)
-    }
+  async logBreakIdle({ userId }) {
+    await this.addUserTimerAction({
+      userId,
+      timerActionId: 9,
+    })
   }
 
-  async logFinish({ idToken }) {
-    try {
-      await axios.post(
-        `${this.base_url}/api/analytics/actions/finish`,
-        {},
-        {
-          headers: {
-            Authorization: idToken,
-          },
-        }
-      )
-    } catch (error) {
-      console.log('[ANALYTICS-SERVICE-FACADE] - service unavailable: ', error)
-    }
+  async logBreak({ userId }) {
+    await this.addUserTimerAction({
+      userId,
+      timerActionId: 2,
+    })
   }
 
-  async logInactive({ idToken }) {
-    try {
-      await axios.post(
-        `${this.base_url}/api/analytics/actions/inactive`,
-        {},
-        {
-          headers: {
-            Authorization: idToken,
-          },
-        }
-      )
-    } catch (error) {
-      console.log('[ANALYTICS-SERVICE-FACADE] - service unavailable: ', error)
-    }
+  async logFinish({ userId }) {
+    await this.addUserTimerAction({
+      userId,
+      timerActionId: 6,
+    })
   }
 
-  async logPauseIdle({ idToken }) {
-    try {
-      await axios.post(
-        `${this.base_url}/api/analytics/actions/pauseIdle`,
-        {},
-        {
-          headers: {
-            Authorization: idToken,
-          },
-        }
-      )
-    } catch (error) {
-      console.log('[ANALYTICS-SERVICE-FACADE] - service unavailable: ', error)
-    }
+  async logInactive({ userId }) {
+    await this.addUserTimerAction({
+      userId,
+      timerActionId: 11,
+    })
   }
 
-  async logPause({ idToken }) {
-    try {
-      await axios.post(
-        `${this.base_url}/api/analytics/actions/pause`,
-        {},
-        {
-          headers: {
-            Authorization: idToken,
-          },
-        }
-      )
-    } catch (error) {
-      console.log('[ANALYTICS-SERVICE-FACADE] - service unavailable: ', error)
-    }
+  async logPauseIdle({ userId }) {
+    await this.addUserTimerAction({
+      userId,
+      timerActionId: 10,
+    })
   }
 
-  async logResume({ idToken }) {
-    try {
-      await axios.post(
-        `${this.base_url}/api/analytics/actions/resume`,
-        {},
-        {
-          headers: {
-            Authorization: idToken,
-          },
-        }
-      )
-    } catch (error) {
-      console.log('[ANALYTICS-SERVICE-FACADE] - service unavailable: ', error)
-    }
+  async logPause({ userId }) {
+    await this.addUserTimerAction({
+      userId,
+      timerActionId: 4,
+    })
   }
 
-  async logStartCycle({ idToken }) {
-    try {
-      await axios.post(
-        `${this.base_url}/api/analytics/actions/startCycle`,
-        {},
-        {
-          headers: {
-            Authorization: idToken,
-          },
-        }
-      )
-    } catch (error) {
-      console.log('[ANALYTICS-SERVICE-FACADE] - service unavailable: ', error)
-    }
+  async logResume({ userId }) {
+    await this.addUserTimerAction({
+      userId,
+      timerActionId: 5,
+    })
   }
 
-  async logWorkIdle({ idToken }) {
-    try {
-      await axios.post(
-        `${this.base_url}/api/analytics/actions/workIdle`,
-        {},
-        {
-          headers: {
-            Authorization: idToken,
-          },
-        }
-      )
-    } catch (error) {
-      console.log('[ANALYTICS-SERVICE-FACADE] - service unavailable: ', error)
-    }
+  async logStartCycle({ userId }) {
+    await this.addUserTimerAction({
+      userId,
+      timerActionId: 7,
+    })
   }
 
-  async logWork({ idToken }) {
-    try {
-      await axios.post(
-        `${this.base_url}/api/analytics/actions/work`,
-        {},
-        {
-          headers: {
-            Authorization: idToken,
-          },
-        }
-      )
-    } catch (error) {
-      console.log('[ANALYTICS-SERVICE-FACADE] - service unavailable: ', error)
-    }
+  async logWorkIdle({ userId }) {
+    await this.addUserTimerAction({
+      userId,
+      timerActionId: 8,
+    })
+  }
+
+  async logWork({ userId }) {
+    await this.addUserTimerAction({
+      userId,
+      timerActionId: 3,
+    })
   }
 }
 

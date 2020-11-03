@@ -6,7 +6,7 @@ class TimerController {
   }
 
   async startTimer(req) {
-    const { userId, idToken } = req.props
+    const { userId } = req.props
 
     if (!userId) {
       return HttpResponse.serverError()
@@ -16,7 +16,6 @@ class TimerController {
       const { startTimerUseCase } = this.useCases
       const response = await startTimerUseCase.execute({
         userId,
-        idToken,
       })
 
       if (response.success === true) {
@@ -39,7 +38,7 @@ class TimerController {
   }
 
   async finishTimer(req) {
-    const { userId, idToken } = req.props
+    const { userId } = req.props
 
     if (!userId) {
       return HttpResponse.serverError()
@@ -49,7 +48,6 @@ class TimerController {
       const { finishTimerUseCase } = this.useCases
       const response = await finishTimerUseCase.execute({
         userId,
-        idToken,
       })
 
       if (response.success === true) {
@@ -72,7 +70,7 @@ class TimerController {
   }
 
   async workTimer(req) {
-    const { userId, idToken } = req.props
+    const { userId } = req.props
 
     if (!userId) {
       return HttpResponse.serverError()
@@ -82,7 +80,6 @@ class TimerController {
       const { workTimerUseCase } = this.useCases
       const response = await workTimerUseCase.execute({
         userId,
-        idToken,
       })
 
       if (response.success === true) {
@@ -105,7 +102,7 @@ class TimerController {
   }
 
   async breakTimer(req) {
-    const { userId, idToken } = req.props
+    const { userId } = req.props
 
     if (!userId) {
       return HttpResponse.serverError()
@@ -115,7 +112,6 @@ class TimerController {
       const { breakTimerUseCase } = this.useCases
       const response = await breakTimerUseCase.execute({
         userId,
-        idToken,
       })
 
       if (response.success === true) {
@@ -138,7 +134,7 @@ class TimerController {
   }
 
   async pauseTimer(req) {
-    const { userId, idToken } = req.props
+    const { userId } = req.props
 
     if (!userId) {
       return HttpResponse.serverError()
@@ -148,7 +144,6 @@ class TimerController {
       const { pauseTimerUseCase } = this.useCases
       const response = await pauseTimerUseCase.execute({
         userId,
-        idToken,
       })
 
       if (response.success === true) {
@@ -171,7 +166,7 @@ class TimerController {
   }
 
   async resumeTimer(req) {
-    const { userId, idToken } = req.props
+    const { userId } = req.props
 
     if (!userId) {
       return HttpResponse.serverError()
@@ -181,7 +176,6 @@ class TimerController {
       const { resumeTimerUseCase } = this.useCases
       const response = await resumeTimerUseCase.execute({
         userId,
-        idToken,
       })
 
       if (response.success === true) {
@@ -204,7 +198,7 @@ class TimerController {
   }
 
   async statusTimer(req) {
-    const { userId, idToken } = req.props
+    const { userId } = req.props
 
     if (!userId) {
       return HttpResponse.serverError()
@@ -214,7 +208,6 @@ class TimerController {
       const { statusTimerUseCase } = this.useCases
       const status = await statusTimerUseCase.execute({
         userId,
-        idToken,
       })
 
       if (status) {
