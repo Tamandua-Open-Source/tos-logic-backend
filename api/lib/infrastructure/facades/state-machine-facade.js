@@ -1,3 +1,6 @@
+import ServerError from '../../interfaces/core/server-error'
+import ClientError from '../../interfaces/core/client-error'
+
 class StateMachineFacade {
   constructor({
     timerPreferencesRepository,
@@ -54,6 +57,7 @@ class StateMachineFacade {
     const preferences = await this.timerPreferencesRepository.getTimerPreferences(
       userId
     )
+    if (!preferences) throw ClientError.notFound('Subscription Not Found')
 
     //operation is blocked
     if (!this.canStartFrom(preferences.currentState)) {
@@ -124,6 +128,7 @@ class StateMachineFacade {
     const preferences = await this.timerPreferencesRepository.getTimerPreferences(
       userId
     )
+    if (!preferences) throw ClientError.notFound('Subscription Not Found')
 
     //operation is blocked
     if (!fromIdleState) {
@@ -187,6 +192,7 @@ class StateMachineFacade {
     const preferences = await this.timerPreferencesRepository.getTimerPreferences(
       userId
     )
+    if (!preferences) throw ClientError.notFound('Subscription Not Found')
 
     //operation is blocked
     if (!elapsedDuration) {
@@ -263,6 +269,7 @@ class StateMachineFacade {
     const preferences = await this.timerPreferencesRepository.getTimerPreferences(
       userId
     )
+    if (!preferences) throw ClientError.notFound('Subscription Not Found')
 
     //operation is blocked
     if (!elapsedDuration) {
@@ -339,6 +346,7 @@ class StateMachineFacade {
     const preferences = await this.timerPreferencesRepository.getTimerPreferences(
       userId
     )
+    if (!preferences) throw ClientError.notFound('Subscription Not Found')
 
     //operation is blocked
     if (!this.canPauseFrom(preferences.currentState)) {
@@ -393,6 +401,7 @@ class StateMachineFacade {
     const preferences = await this.timerPreferencesRepository.getTimerPreferences(
       userId
     )
+    if (!preferences) throw ClientError.notFound('Subscription Not Found')
 
     //operation is blocked
     if (!this.canResumeFrom(preferences.currentState)) {
@@ -574,6 +583,8 @@ class StateMachineFacade {
     const [preferences] = await Promise.all([
       this.timerPreferencesRepository.getTimerPreferences(userId),
     ])
+
+    if (!preferences) throw ClientError.notFound('Subscription Not Found')
 
     var millisecondsToStartCycle = null
     var millisecondsToNextBreak = null

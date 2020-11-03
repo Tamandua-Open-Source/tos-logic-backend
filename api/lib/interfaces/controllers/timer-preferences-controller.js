@@ -1,4 +1,6 @@
 import HttpResponse from '../core/http-response'
+import ServerError from '../core/server-error'
+import ClientError from '../core/client-error'
 
 class TimerPreferencesController {
   constructor(useCases) {
@@ -8,96 +10,73 @@ class TimerPreferencesController {
   async subscribeUserPreferencesByUserId(req) {
     const { userId } = req.params
 
-    try {
-      const { createTimerPreferencesUseCase } = this.useCases
-      const preferences = await createTimerPreferencesUseCase.execute(userId)
+    if (!userId) throw ClientError.badRequest("Missing 'userId' Path Parameter")
 
-      if (!preferences) {
-        return HttpResponse.ok({
-          message: 'User is already subscribed to service',
-        })
-      } else {
-        return HttpResponse.ok({
-          message: 'Preferences Created',
-          preferences,
-        })
-      }
-    } catch (error) {
-      console.log(error)
-      return HttpResponse.serverError()
-    }
+    const { createTimerPreferencesUseCase } = this.useCases
+    const preferences = await createTimerPreferencesUseCase.execute(userId)
+
+    if (!preferences)
+      return HttpResponse.accepted({
+        message: 'User Is Already Subscribed To Service',
+      })
+
+    return HttpResponse.created({
+      message: 'User Subscribed, Preferences Created',
+      preferences,
+    })
   }
 
   async unsubscribeUserPreferencesByUserId(req) {
     const { userId } = req.params
 
-    try {
-      const { deleteTimerPreferencesUseCase } = this.useCases
-      const preferences = await deleteTimerPreferencesUseCase.execute(userId)
+    if (!userId) throw ClientError.badRequest("Missing 'userId' Path Parameter")
 
-      if (!preferences) {
-        return HttpResponse.ok({
-          message: 'User already deleted',
-          UserId: userId,
-        })
-      } else {
-        return HttpResponse.ok({
-          message: 'Preferences Deleted',
-          UserId: userId,
-        })
-      }
-    } catch (error) {
-      console.log(error)
-      return HttpResponse.serverError()
-    }
-  }
+    const { deleteTimerPreferencesUseCase } = this.useCases
+    const success = await deleteTimerPreferencesUseCase.execute(userId)
 
-  async createUserPreferences(req) {
-    const { userId } = req.props
+    if (!success)
+      return HttpResponse.accepted({
+        message: 'User Is Already Unubscribed From Service',
+        UserId: userId,
+      })
 
-    if (!userId) {
-      return HttpResponse.serverError()
-    }
-
-    try {
-      const { createTimerPreferencesUseCase } = this.useCases
-      const preferences = await createTimerPreferencesUseCase.execute(userId)
-
-      if (!preferences) {
-        return HttpResponse.ok({
-          message: 'User is already subscribed to service',
-        })
-      } else {
-        return HttpResponse.ok({
-          message: 'Preferences Created',
-          preferences,
-        })
-      }
-    } catch (error) {
-      console.log(error)
-      return HttpResponse.serverError()
-    }
+    return HttpResponse.ok({
+      message: 'User Unubscribed, Preferences Deleted',
+      UserId: userId,
+    })
   }
 
   async getTimerPreferences(req) {
     const { userId } = req.props
 
-    try {
-      const { getTimerPreferencesUseCase } = this.useCases
-      const preferences = await getTimerPreferencesUseCase.execute(userId)
+    const { getTimerPreferencesUseCase } = this.useCases
+    const preferences = await getTimerPreferencesUseCase.execute(userId)
 
-      if (!preferences) {
-        return HttpResponse.unauthorizedError()
-      } else {
-        return HttpResponse.ok({
-          message: 'Preferences Retrieved',
-          preferences,
-        })
-      }
-    } catch (error) {
-      console.log(error)
-      return HttpResponse.serverError()
-    }
+    if (!preferences) throw ClientError.notFound()
+
+    return HttpResponse.ok({
+      message: 'Preferences Retrieved',
+      preferences,
+    })
+  }
+
+  async createUserPreferences(req) {
+    const { userId } = req.props
+
+    if (!userId) throw ServerError.internal()
+
+    const { createTimerPreferencesUseCase } = this.useCases
+    const preferences = await createTimerPreferencesUseCase.execute(userId)
+
+    if (!preferences)
+      return HttpResponse.accepted({
+        message: 'Preferences Already Created',
+      })
+
+    return HttpResponse.created({
+      message: 'Preferences Created',
+      preferences,
+    })
   }
 
   async patchTimerPreferences(req) {
@@ -115,69 +94,60 @@ class TimerPreferencesController {
     } = req.body
     const { userId } = req.props
 
-    try {
-      const { patchTimerPreferencesUseCase } = this.useCases
-      const preferences = await patchTimerPreferencesUseCase.execute(userId, {
-        fcmToken: fcmToken,
-        startTime: startTime,
-        breakDuration: breakDuration ? parseInt(breakDuration) : undefined,
-        breakLimitDuration: breakLimitDuration
-          ? parseInt(breakLimitDuration)
-          : undefined,
-        breakIdleLimitDuration: breakIdleLimitDuration
-          ? parseInt(breakIdleLimitDuration)
-          : undefined,
-        workDuration: workDuration ? parseInt(workDuration) : undefined,
-        workLimitDuration: workLimitDuration
-          ? parseInt(workLimitDuration)
-          : undefined,
-        workIdleLimitDuration: workIdleLimitDuration
-          ? parseInt(workIdleLimitDuration)
-          : undefined,
-        pauseLimitDuration: pauseLimitDuration
-          ? parseInt(pauseLimitDuration)
-          : undefined,
-        pauseIdleLimitDuration: pauseIdleLimitDuration
-          ? parseInt(pauseIdleLimitDuration)
-          : undefined,
-      })
+    if (!userId) throw ServerError.internal()
 
-      if (!preferences) {
-        return HttpResponse.unauthorizedError()
-      } else {
-        return HttpResponse.ok({
-          message: 'Preferences Patched',
-          preferences,
-        })
-      }
-    } catch (error) {
-      console.log(error)
-      return HttpResponse.serverError()
-    }
+    const { patchTimerPreferencesUseCase } = this.useCases
+    const preferences = await patchTimerPreferencesUseCase.execute(userId, {
+      fcmToken: fcmToken,
+      startTime: startTime,
+      breakDuration: breakDuration ? parseInt(breakDuration) : undefined,
+      breakLimitDuration: breakLimitDuration
+        ? parseInt(breakLimitDuration)
+        : undefined,
+      breakIdleLimitDuration: breakIdleLimitDuration
+        ? parseInt(breakIdleLimitDuration)
+        : undefined,
+      workDuration: workDuration ? parseInt(workDuration) : undefined,
+      workLimitDuration: workLimitDuration
+        ? parseInt(workLimitDuration)
+        : undefined,
+      workIdleLimitDuration: workIdleLimitDuration
+        ? parseInt(workIdleLimitDuration)
+        : undefined,
+      pauseLimitDuration: pauseLimitDuration
+        ? parseInt(pauseLimitDuration)
+        : undefined,
+      pauseIdleLimitDuration: pauseIdleLimitDuration
+        ? parseInt(pauseIdleLimitDuration)
+        : undefined,
+    })
+
+    if (!preferences) throw ClientError.notFound()
+
+    return HttpResponse.ok({
+      message: 'Preferences Patched',
+      preferences,
+    })
   }
 
   async deleteTimerPreferences(req) {
     const { userId } = req.props
 
-    try {
-      const { deleteTimerPreferencesUseCase } = this.useCases
-      const preferences = await deleteTimerPreferencesUseCase.execute(userId)
+    if (!userId) throw ServerError.internal()
 
-      if (!preferences) {
-        return HttpResponse.ok({
-          message: 'User already deleted',
-          UserId: userId,
-        })
-      } else {
-        return HttpResponse.ok({
-          message: 'Preferences Deleted',
-          UserId: userId,
-        })
-      }
-    } catch (error) {
-      console.log(error)
-      return HttpResponse.serverError()
-    }
+    const { deleteTimerPreferencesUseCase } = this.useCases
+    const success = await deleteTimerPreferencesUseCase.execute(userId)
+
+    if (!success)
+      return HttpResponse.accepted({
+        message: 'Prefereces Already Deleted',
+        UserId: userId,
+      })
+
+    return HttpResponse.ok({
+      message: 'Preferences Deleted',
+      UserId: userId,
+    })
   }
 }
 

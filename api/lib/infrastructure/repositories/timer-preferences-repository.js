@@ -1,4 +1,6 @@
 import db from '../orm/models'
+import ServerError from '../../interfaces/core/server-error'
+import ClientError from '../../interfaces/core/client-error'
 
 class TimerPreferencesRepository {
   async createTimerPreferences(userId) {
@@ -39,7 +41,8 @@ class TimerPreferencesRepository {
       },
     })
 
-    if (!timerPreferences) return null
+    if (!timerPreferences)
+      throw ClientError.notFound('Timer Preferences Not Found')
 
     return await timerPreferences.update(updatedFields)
   }

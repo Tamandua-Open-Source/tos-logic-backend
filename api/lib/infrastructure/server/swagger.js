@@ -9,11 +9,9 @@ export default {
   tags: [
     {
       name: 'Timer',
-      description: 'API for timer service',
     },
     {
       name: 'Timer Preferences',
-      description: 'API for timer service preferences',
     },
     {
       name: 'Service Subscription',
@@ -33,8 +31,7 @@ export default {
           {
             in: 'header',
             name: 'authorization',
-            description: 'Token used to authenticate the user',
-            required: false,
+            description: 'Authentication Token Id',
             schema: {
               type: 'string',
             },
@@ -42,18 +39,25 @@ export default {
         ],
         produces: ['application/json'],
         responses: {
-          200: {
-            description: 'OK',
+          201: {
+            description: 'Created',
             schema: {
               type: 'object',
               $ref: '#/definitions/Success Timer Response',
             },
           },
-          204: {
-            description: 'Fail - Code will be 200, (TODO: change to 204)',
+          202: {
+            description: 'Accepted',
             schema: {
               type: 'object',
               $ref: '#/definitions/Fail Timer Response',
+            },
+          },
+          '4xx - 5xx': {
+            description: 'Error',
+            schema: {
+              type: 'object',
+              $ref: '#/definitions/Error',
             },
           },
         },
@@ -67,8 +71,7 @@ export default {
           {
             in: 'header',
             name: 'authorization',
-            description: 'Token used to authenticate the user',
-            required: false,
+            description: 'Authentication Token Id',
             schema: {
               type: 'string',
             },
@@ -76,18 +79,25 @@ export default {
         ],
         produces: ['application/json'],
         responses: {
-          200: {
-            description: 'OK',
+          201: {
+            description: 'Created',
             schema: {
               type: 'object',
               $ref: '#/definitions/Success Timer Response',
             },
           },
-          204: {
-            description: 'Fail - Code will be 200, (TODO: change to 204)',
+          202: {
+            description: 'Accepted',
             schema: {
               type: 'object',
               $ref: '#/definitions/Fail Timer Response',
+            },
+          },
+          '4xx - 5xx': {
+            description: 'Error',
+            schema: {
+              type: 'object',
+              $ref: '#/definitions/Error',
             },
           },
         },
@@ -101,8 +111,7 @@ export default {
           {
             in: 'header',
             name: 'authorization',
-            description: 'Token used to authenticate the user',
-            required: false,
+            description: 'Authentication Token Id',
             schema: {
               type: 'string',
             },
@@ -110,18 +119,25 @@ export default {
         ],
         produces: ['application/json'],
         responses: {
-          200: {
-            description: 'OK',
+          201: {
+            description: 'Created',
             schema: {
               type: 'object',
               $ref: '#/definitions/Success Timer Response',
             },
           },
-          204: {
-            description: 'Fail - Code will be 200, (TODO: change to 204)',
+          202: {
+            description: 'Accepted',
             schema: {
               type: 'object',
               $ref: '#/definitions/Fail Timer Response',
+            },
+          },
+          '4xx - 5xx': {
+            description: 'Error',
+            schema: {
+              type: 'object',
+              $ref: '#/definitions/Error',
             },
           },
         },
@@ -135,8 +151,7 @@ export default {
           {
             in: 'header',
             name: 'authorization',
-            description: 'Token used to authenticate the user',
-            required: false,
+            description: 'Authentication Token Id',
             schema: {
               type: 'string',
             },
@@ -144,18 +159,25 @@ export default {
         ],
         produces: ['application/json'],
         responses: {
-          200: {
-            description: 'OK',
+          201: {
+            description: 'Created',
             schema: {
               type: 'object',
               $ref: '#/definitions/Success Timer Response',
             },
           },
-          204: {
-            description: 'Fail - Code will be 200, (TODO: change to 204)',
+          202: {
+            description: 'Accepted',
             schema: {
               type: 'object',
               $ref: '#/definitions/Fail Timer Response',
+            },
+          },
+          '4xx - 5xx': {
+            description: 'Error',
+            schema: {
+              type: 'object',
+              $ref: '#/definitions/Error',
             },
           },
         },
@@ -169,8 +191,7 @@ export default {
           {
             in: 'header',
             name: 'authorization',
-            description: 'Token used to authenticate the user',
-            required: false,
+            description: 'Authentication Token Id',
             schema: {
               type: 'string',
             },
@@ -178,18 +199,25 @@ export default {
         ],
         produces: ['application/json'],
         responses: {
-          200: {
-            description: 'OK',
+          201: {
+            description: 'Created',
             schema: {
               type: 'object',
               $ref: '#/definitions/Success Timer Response',
             },
           },
-          204: {
-            description: 'Fail - Code will be 200, (TODO: change to 204)',
+          202: {
+            description: 'Accepted',
             schema: {
               type: 'object',
               $ref: '#/definitions/Fail Timer Response',
+            },
+          },
+          '4xx - 5xx': {
+            description: 'Error',
+            schema: {
+              type: 'object',
+              $ref: '#/definitions/Error',
             },
           },
         },
@@ -203,8 +231,7 @@ export default {
           {
             in: 'header',
             name: 'authorization',
-            description: 'Token used to authenticate the user',
-            required: false,
+            description: 'Authentication Token Id',
             schema: {
               type: 'string',
             },
@@ -212,18 +239,25 @@ export default {
         ],
         produces: ['application/json'],
         responses: {
-          200: {
-            description: 'OK',
+          201: {
+            description: 'Created',
             schema: {
               type: 'object',
               $ref: '#/definitions/Success Timer Response',
             },
           },
-          204: {
-            description: 'Fail - Code will be 200, (TODO: change to 204)',
+          202: {
+            description: 'Accepted',
             schema: {
               type: 'object',
               $ref: '#/definitions/Fail Timer Response',
+            },
+          },
+          '4xx - 5xx': {
+            description: 'Error',
+            schema: {
+              type: 'object',
+              $ref: '#/definitions/Error',
             },
           },
         },
@@ -237,8 +271,7 @@ export default {
           {
             in: 'header',
             name: 'authorization',
-            description: 'Token used to authenticate the user',
-            required: false,
+            description: 'Authentication Token Id',
             schema: {
               type: 'string',
             },
@@ -246,18 +279,25 @@ export default {
         ],
         produces: ['application/json'],
         responses: {
-          200: {
-            description: 'OK',
+          201: {
+            description: 'Created',
             schema: {
               type: 'object',
               $ref: '#/definitions/Success Timer Response',
             },
           },
-          204: {
-            description: 'Fail - Code will be 200, (TODO: change to 204)',
+          202: {
+            description: 'Accepted',
             schema: {
               type: 'object',
               $ref: '#/definitions/Fail Timer Response',
+            },
+          },
+          '4xx - 5xx': {
+            description: 'Error',
+            schema: {
+              type: 'object',
+              $ref: '#/definitions/Error',
             },
           },
         },
@@ -273,8 +313,7 @@ export default {
           {
             in: 'header',
             name: 'authorization',
-            description: 'Api key',
-            required: false,
+            description: 'Timer Service Api Key',
             schema: {
               type: 'string',
             },
@@ -294,6 +333,24 @@ export default {
             schema: {
               type: 'object',
               $ref: '#/definitions/Timer Preferences',
+            },
+          },
+          202: {
+            description: 'Accepted',
+            schema: {
+              type: 'object',
+              properties: {
+                message: {
+                  type: 'string',
+                },
+              },
+            },
+          },
+          '4xx - 5xx': {
+            description: 'Error',
+            schema: {
+              type: 'object',
+              $ref: '#/definitions/Error',
             },
           },
         },
@@ -307,8 +364,7 @@ export default {
           {
             in: 'header',
             name: 'authorization',
-            description: 'Api key',
-            required: false,
+            description: 'Timer Service Api Key',
             schema: {
               type: 'string',
             },
@@ -327,7 +383,35 @@ export default {
             description: 'OK',
             schema: {
               type: 'object',
-              $ref: '#/definitions/Timer Preferences',
+              properties: {
+                message: {
+                  type: 'string',
+                },
+                UserId: {
+                  type: 'string',
+                },
+              },
+            },
+          },
+          202: {
+            description: 'Accepted',
+            schema: {
+              type: 'object',
+              properties: {
+                message: {
+                  type: 'string',
+                },
+                UserId: {
+                  type: 'string',
+                },
+              },
+            },
+          },
+          '4xx - 5xx': {
+            description: 'Error',
+            schema: {
+              type: 'object',
+              $ref: '#/definitions/Error',
             },
           },
         },
@@ -342,8 +426,7 @@ export default {
           {
             in: 'header',
             name: 'authorization',
-            description: 'Token used to authenticate the user',
-            required: false,
+            description: 'Authentication Token Id',
             schema: {
               type: 'string',
             },
@@ -358,6 +441,13 @@ export default {
               $ref: '#/definitions/Timer Preferences',
             },
           },
+          '4xx - 5xx': {
+            description: 'Error',
+            schema: {
+              type: 'object',
+              $ref: '#/definitions/Error',
+            },
+          },
         },
       },
       patch: {
@@ -367,8 +457,7 @@ export default {
           {
             in: 'header',
             name: 'authorization',
-            description: 'Token used to authenticate the user',
-            required: false,
+            description: 'Authentication Token Id',
             schema: {
               type: 'string',
             },
@@ -404,6 +493,13 @@ export default {
               $ref: '#/definitions/Timer Preferences',
             },
           },
+          '4xx - 5xx': {
+            description: 'Error',
+            schema: {
+              type: 'object',
+              $ref: '#/definitions/Error',
+            },
+          },
         },
       },
     },
@@ -415,8 +511,7 @@ export default {
           {
             in: 'header',
             name: 'authorization',
-            description: 'Token used to authenticate the user',
-            required: false,
+            description: 'Authentication Token Id',
             schema: {
               type: 'string',
             },
@@ -431,6 +526,27 @@ export default {
               $ref: '#/definitions/Timer Preferences',
             },
           },
+          202: {
+            description: 'Accepted',
+            schema: {
+              type: 'object',
+              properties: {
+                message: {
+                  type: 'string',
+                },
+                UserId: {
+                  type: 'string',
+                },
+              },
+            },
+          },
+          '4xx - 5xx': {
+            description: 'Error',
+            schema: {
+              type: 'object',
+              $ref: '#/definitions/Error',
+            },
+          },
         },
       },
     },
@@ -442,8 +558,7 @@ export default {
           {
             in: 'header',
             name: 'authorization',
-            description: 'Token used to authenticate the user',
-            required: false,
+            description: 'Authentication Token Id',
             schema: {
               type: 'string',
             },
@@ -463,6 +578,27 @@ export default {
                   type: 'string',
                 },
               },
+            },
+          },
+          202: {
+            description: 'Accepted',
+            schema: {
+              type: 'object',
+              properties: {
+                message: {
+                  type: 'string',
+                },
+                UserId: {
+                  type: 'string',
+                },
+              },
+            },
+          },
+          '4xx - 5xx': {
+            description: 'Error',
+            schema: {
+              type: 'object',
+              $ref: '#/definitions/Error',
             },
           },
         },
@@ -605,6 +741,30 @@ export default {
               type: 'string',
             },
           },
+        },
+      },
+    },
+
+    Error: {
+      type: 'object',
+      properties: {
+        errorCode: {
+          type: 'string',
+        },
+        message: {
+          type: 'string',
+        },
+        errors: {
+          type: 'array',
+          items: {
+            type: 'string',
+          },
+        },
+        method: {
+          type: 'string',
+        },
+        url: {
+          type: 'string',
         },
       },
     },
