@@ -14,8 +14,20 @@ class FirebaseAdminFacade {
   }
 
   async verifyToken(idToken) {
-    const decodedToken = await firebaseAdmin.auth().verifyIdToken(idToken)
-    return decodedToken.uid
+    try {
+      const decodedToken = await firebaseAdmin.auth().verifyIdToken(idToken)
+
+      const user = {
+        name: decodedToken.name,
+        email: decodedToken.email ?? uuidv4() + '@no-email.com',
+        userId: decodedToken.uid,
+      }
+
+      return user
+    } catch (error) {
+      console.log(error)
+      return undefined
+    }
   }
 
   async send({ title, body, category, fcmToken }) {

@@ -1,15 +1,12 @@
 import { Router } from 'express'
 import ExpressRouterAdapter from '../../../interfaces/express-adapters/express-router-adapter'
 import ExpressMiddlewareAdapter from '../../../interfaces/express-adapters/express-middleware-adapter'
+import AuthMiddlewareComposer from '../../../interfaces/middlewares/composers/auth-middleware-composer'
 
 import TimerPreferencesControllerComposer from '../../../interfaces/controllers/composers/timer-preferences-controller-composer'
 
-import ApiKeyMiddlewareComposer from '../../../interfaces/middlewares/composers/api-key-middleware-composer'
-import AuthMiddlewareComposer from '../../../interfaces/middlewares/composers/auth-middleware-composer'
-
 const timerPreferencesController = TimerPreferencesControllerComposer.compose()
 const authMiddleware = AuthMiddlewareComposer.compose()
-const apiKeyMiddleware = ApiKeyMiddlewareComposer.compose()
 
 const router = Router()
 
@@ -31,7 +28,7 @@ router.patch(
 
 router.post(
   '/subscribe/:userId',
-  ExpressMiddlewareAdapter.adapt((req) => apiKeyMiddleware.verifyApiKey(req)),
+  ExpressMiddlewareAdapter.adapt((req) => authMiddleware.verifyApiKey(req)),
   ExpressRouterAdapter.adapt((req) =>
     timerPreferencesController.subscribeUserPreferencesByUserId(req)
   )
@@ -39,7 +36,7 @@ router.post(
 
 router.delete(
   '/unsubscribe/:userId',
-  ExpressMiddlewareAdapter.adapt((req) => apiKeyMiddleware.verifyApiKey(req)),
+  ExpressMiddlewareAdapter.adapt((req) => authMiddleware.verifyApiKey(req)),
   ExpressRouterAdapter.adapt((req) =>
     timerPreferencesController.unsubscribeUserPreferencesByUserId(req)
   )
