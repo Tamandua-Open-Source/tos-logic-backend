@@ -11,6 +11,8 @@ import ErrorHandlerMiddleware from '../../interfaces/middlewares/error-handler-m
 const app = express()
 const port = process.env.PORT || 8001
 
+app.set('trust proxy', true)
+
 app.use(logger('common'))
 app.use(compression())
 app.use(bodyParser.json())
