@@ -595,7 +595,6 @@ class StateMachineFacade {
     var millisecondsToInactive = null
 
     const nowTimestamp = new Date().getTime()
-
     const lastWorkTimestamp = new Date(preferences.lastWorkStartTime).getTime()
     const lastBreakTimestamp = new Date(
       preferences.lastBreakStartTime
@@ -617,33 +616,59 @@ class StateMachineFacade {
 
     switch (preferences.currentState) {
       case this.workState:
-        // const lastPauseStartTime = new Date(preferences.lastPauseStartTime)
-        // const lastWorkStartTime = new Date(preferences.lastWorkStartTime)
-        // const elapsedDuration =
-        //   lastPauseStartTime.getTime() - lastWorkStartTime.getTime()
-
+        const elapsedWorkStateTime = nowTimestamp - lastWorkTimestamp
+        millisecondsToNextBreak = workDuration - elapsedWorkStateTime
+        millisecondsToWorkIdle = workLimitDuration - elapsedWorkStateTime
+        millisecondsToInactive =
+          workLimitDuration + workIdleLimitDuration - elapsedWorkStateTime
         break
+
       case this.breakState:
-        break
-      case this.pauseState:
-        break
-      case this.workIdleState:
-        break
-      case this.breakIdleState:
-        break
-      case this.pauseIdleState:
+        const elapsedBreakStateTime = nowTimestamp - lastBreakTimestamp
+        millisecondsToNextWork = breakDuration - elapsedBreakStateTime
+        millisecondsToBreakIdle = breakLimitDuration - elapsedBreakStateTime
+        millisecondsToInactive =
+          breakLimitDuration + breakIdleLimitDuration - elapsedBreakStateTime
         break
 
+      case this.pauseState:
+        const elapsedPauseStateTime = nowTimestamp - lastPauseTimestamp
+        millisecondsToPauseIdle = pauseLimitDuration - elapsedPauseStateTime
+        millisecondsToInactive =
+          pauseLimitDuration + pauseIdleLimitDuration - elapsedPauseStateTime
+        break
+
+      case this.workIdleState:
+        const elapsedWorkIdleStateTime = nowTimestamp - lastWorkTimestamp
+        millisecondsToInactive =
+          workLimitDuration + workIdleLimitDuration - elapsedWorkIdleStateTime
+        break
+
+      case this.breakIdleState:
+        const elapsedBreakIdleStateTime = nowTimestamp - lastBreakTimestamp
+        millisecondsToInactive =
+          breakLimitDuration +
+          breakIdleLimitDuration -
+          elapsedBreakIdleStateTime
+        break
+
+      case this.pauseIdleState:
+        const elapsedPauseIdleStateTime = nowTimestamp - lastPauseTimestamp
+        millisecondsToInactive =
+          pauseLimitDuration +
+          pauseIdleLimitDuration -
+          elapsedPauseIdleStateTime
+        break
+
+      case this.inactiveState:
+        millisecondsToStartCycle = this.getMillisecondsToNextStartCycleDate({
+          startDate: preferences.startTime,
+        })
+        break
       default:
         break
     }
 
-    // const nowTimestamp = new Date().getTime()
-    // const lastBreakTs = new Date(preferences.lastBreakStartTime).getTime()
-    // const lastWorkTs = new Date(preferences.lastWorkStartTime).getTime()
-    // const lastPauseTs = new Date(preferences.lastPauseStartTime).getTime()
-
-    //TODO: - calculate responses
     return {
       lastState: preferences.lastState,
       currentState: preferences.currentState,
