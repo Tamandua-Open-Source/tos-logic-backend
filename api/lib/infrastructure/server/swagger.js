@@ -471,6 +471,7 @@ export default {
               type: 'object',
               properties: {
                 fcmToken: { type: 'string' },
+                allowTimerNotifications: { type: 'boolean' },
                 startTime: { type: 'string' },
                 breakDuration: { type: 'integer' },
                 breakLimitDuration: { type: 'integer' },
@@ -691,6 +692,9 @@ export default {
             },
             fcmToken: {
               type: 'string',
+            },
+            allowTimerNotifications: {
+              type: 'boolean',
             },
             startTime: {
               type: 'string',

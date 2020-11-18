@@ -1,5 +1,6 @@
 import ServerError from '../../interfaces/core/server-error'
 import ClientError from '../../interfaces/core/client-error'
+import e from 'express'
 
 class StateMachineFacade {
   constructor({
@@ -92,14 +93,18 @@ class StateMachineFacade {
       preferences.workLimitDuration + preferences.workIdleLimitDuration
 
     //NEXT_BREAK
-    this.schedulingFacade.scheduleNotification({
-      userId: userId,
-      title: pushMessage[0].title || '',
-      body: pushMessage[0].body || '',
-      category: pushMessage[0].category || '',
-      fcmToken: preferences.fcmToken,
-      delay: preferences.workDuration,
-    })
+    if (preferences.allowTimerNotifications == true) {
+      this.schedulingFacade.scheduleNotification({
+        userId: userId,
+        title: pushMessage[0].title || '',
+        body: pushMessage[0].body || '',
+        category: pushMessage[0].category || '',
+        fcmToken: preferences.fcmToken,
+        delay: preferences.workDuration,
+      })
+    } else {
+      console.log('[allowTimerNotifications: false] - NEXT_BREAK')
+    }
 
     //WORK_IDLE
     this.schedulingFacade.scheduleState({
@@ -163,14 +168,18 @@ class StateMachineFacade {
     })
 
     //START_CYCLE
-    this.schedulingFacade.scheduleNotification({
-      userId: userId,
-      title: pushMessage[0].title || '',
-      body: pushMessage[0].body || '',
-      category: pushMessage[0].category || '',
-      fcmToken: preferences.fcmToken,
-      delay: millisecondsToStartCycle, //DEBUG: Retirar o '?? delay' para iniciar no próximo dia
-    })
+    if (preferences.allowTimerNotifications == true) {
+      this.schedulingFacade.scheduleNotification({
+        userId: userId,
+        title: pushMessage[0].title || '',
+        body: pushMessage[0].body || '',
+        category: pushMessage[0].category || '',
+        fcmToken: preferences.fcmToken,
+        delay: millisecondsToStartCycle,
+      })
+    } else {
+      console.log('[allowTimerNotifications: false] - START_CYCLE')
+    }
 
     return {
       status: {
@@ -233,14 +242,18 @@ class StateMachineFacade {
       (elapsedDuration ?? 0)
 
     //NEXT_BREAK
-    this.schedulingFacade.scheduleNotification({
-      userId: userId,
-      title: pushMessage[0].title || '',
-      body: pushMessage[0].body || '',
-      category: pushMessage[0].category || '',
-      fcmToken: preferences.fcmToken,
-      delay: millisecondsToNextBreak,
-    })
+    if (preferences.allowTimerNotifications == true) {
+      this.schedulingFacade.scheduleNotification({
+        userId: userId,
+        title: pushMessage[0].title || '',
+        body: pushMessage[0].body || '',
+        category: pushMessage[0].category || '',
+        fcmToken: preferences.fcmToken,
+        delay: millisecondsToNextBreak,
+      })
+    } else {
+      console.log('[allowTimerNotifications: false] - NEXT_BREAK')
+    }
 
     //WORK_IDLE
     this.schedulingFacade.scheduleState({
@@ -310,14 +323,18 @@ class StateMachineFacade {
       (elapsedDuration ?? 0)
 
     //NEXT_WORK
-    this.schedulingFacade.scheduleNotification({
-      userId: userId,
-      title: pushMessage[0].title || '',
-      body: pushMessage[0].body || '',
-      category: pushMessage[0].category || '',
-      fcmToken: preferences.fcmToken,
-      delay: millisecondsToNextWork,
-    })
+    if (preferences.allowTimerNotifications == true) {
+      this.schedulingFacade.scheduleNotification({
+        userId: userId,
+        title: pushMessage[0].title || '',
+        body: pushMessage[0].body || '',
+        category: pushMessage[0].category || '',
+        fcmToken: preferences.fcmToken,
+        delay: millisecondsToNextWork,
+      })
+    } else {
+      console.log('[allowTimerNotifications: false] - NEXT_WORK')
+    }
 
     //BREAK_IDLE
     this.schedulingFacade.scheduleState({
@@ -459,14 +476,18 @@ class StateMachineFacade {
     ])
 
     //WORK_IDLE
-    this.schedulingFacade.scheduleNotification({
-      userId: userId,
-      title: pushMessage[0].title || '',
-      body: pushMessage[0].body || '',
-      category: pushMessage[0].category || '',
-      fcmToken: preferences.fcmToken,
-      delay: 0,
-    })
+    if (preferences.allowTimerNotifications == true) {
+      this.schedulingFacade.scheduleNotification({
+        userId: userId,
+        title: pushMessage[0].title || '',
+        body: pushMessage[0].body || '',
+        category: pushMessage[0].category || '',
+        fcmToken: preferences.fcmToken,
+        delay: 0,
+      })
+    } else {
+      console.log('[allowTimerNotifications: false] - WORK_IDLE')
+    }
 
     //INACTIVE
     this.schedulingFacade.scheduleState({
@@ -494,14 +515,18 @@ class StateMachineFacade {
     ])
 
     //BREAK_IDLE
-    this.schedulingFacade.scheduleNotification({
-      userId: userId,
-      title: pushMessage[0].title || '',
-      body: pushMessage[0].body || '',
-      category: pushMessage[0].category || '',
-      fcmToken: preferences.fcmToken,
-      delay: 0,
-    })
+    if (preferences.allowTimerNotifications == true) {
+      this.schedulingFacade.scheduleNotification({
+        userId: userId,
+        title: pushMessage[0].title || '',
+        body: pushMessage[0].body || '',
+        category: pushMessage[0].category || '',
+        fcmToken: preferences.fcmToken,
+        delay: 0,
+      })
+    } else {
+      console.log('[allowTimerNotifications: false] - BREAK_IDLE')
+    }
 
     //INACTIVE
     this.schedulingFacade.scheduleState({
@@ -529,14 +554,18 @@ class StateMachineFacade {
     ])
 
     //PAUSE_IDLE
-    this.schedulingFacade.scheduleNotification({
-      userId: userId,
-      title: pushMessage[0].title || '',
-      body: pushMessage[0].body || '',
-      category: pushMessage[0].category || '',
-      fcmToken: preferences.fcmToken,
-      delay: 0,
-    })
+    if (preferences.allowTimerNotifications == true) {
+      this.schedulingFacade.scheduleNotification({
+        userId: userId,
+        title: pushMessage[0].title || '',
+        body: pushMessage[0].body || '',
+        category: pushMessage[0].category || '',
+        fcmToken: preferences.fcmToken,
+        delay: 0,
+      })
+    } else {
+      console.log('[allowTimerNotifications: false] - PAUSE_IDLE')
+    }
 
     //INACTIVE
     this.schedulingFacade.scheduleState({
@@ -567,14 +596,18 @@ class StateMachineFacade {
     ])
 
     //INACTIVE
-    this.schedulingFacade.scheduleNotification({
-      userId: userId,
-      title: pushMessage[0].title || '',
-      body: pushMessage[0].body || '',
-      category: pushMessage[0].category || '',
-      fcmToken: preferences.fcmToken,
-      delay: 0,
-    })
+    if (preferences.allowTimerNotifications == true) {
+      this.schedulingFacade.scheduleNotification({
+        userId: userId,
+        title: pushMessage[0].title || '',
+        body: pushMessage[0].body || '',
+        category: pushMessage[0].category || '',
+        fcmToken: preferences.fcmToken,
+        delay: 0,
+      })
+    } else {
+      console.log('[allowTimerNotifications: false] - INACTIVE')
+    }
 
     this.onFinish({ userId, fromIdleState: true })
   }
