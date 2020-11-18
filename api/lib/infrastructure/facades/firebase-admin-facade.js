@@ -21,6 +21,7 @@ class FirebaseAdminFacade {
         name: decodedToken.name,
         email: decodedToken.email ?? uuidv4() + '@no-email.com',
         userId: decodedToken.uid,
+        photoUrl: decodedToken.picture ?? null,
       }
 
       return user

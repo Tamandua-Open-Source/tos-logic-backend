@@ -8,6 +8,7 @@ class TimerPreferencesRepository {
       UserId: userId,
       fcmToken: null,
       startTime: new Date(),
+      allowTimerNotifications: true,
       breakDuration: 900000, // 15 min
       breakLimitDuration: 1200000, // 20 min
       breakIdleLimitDuration: 300000, // 5 min
