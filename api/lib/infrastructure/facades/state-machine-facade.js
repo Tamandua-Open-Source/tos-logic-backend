@@ -1,13 +1,14 @@
-import IStateMachineFacade from '../../application/facade-interfaces/i-state-machine-facade'
+import ServerError from '../../interfaces/core/server-error'
+import ClientError from '../../interfaces/core/client-error'
+import e from 'express'
 
-class StateMachineFacade extends IStateMachineFacade {
+class StateMachineFacade {
   constructor({
     timerPreferencesRepository,
     schedulingFacade,
     analyticsServiceFacade,
     pushMessageRepository,
   }) {
-    super()
     this.timerPreferencesRepository = timerPreferencesRepository
     this.schedulingFacade = schedulingFacade
     this.analyticsServiceFacade = analyticsServiceFacade
@@ -53,10 +54,11 @@ class StateMachineFacade extends IStateMachineFacade {
     return [this.pauseState, this.pauseIdleState].includes(currentState)
   }
 
-  async onStart({ userId, idToken }) {
+  async onStart({ userId }) {
     const preferences = await this.timerPreferencesRepository.getTimerPreferences(
       userId
     )
+    if (!preferences) throw ClientError.notFound('Subscription Not Found')
 
     //operation is blocked
     if (!this.canStartFrom(preferences.currentState)) {
@@ -80,30 +82,33 @@ class StateMachineFacade extends IStateMachineFacade {
         currentState: this.workState,
       }),
 
-      this.analyticsServiceFacade.logStartCycle({ idToken }),
+      this.analyticsServiceFacade.logStartCycle({ userId }),
       this.schedulingFacade.removeJobsOnNotificationQueue({ userId }),
       this.schedulingFacade.removeJobsOnStateQueue({ userId }),
     ])
 
-    this.analyticsServiceFacade.logWork({ idToken })
+    this.analyticsServiceFacade.logWork({ userId })
 
     const millisecondsToInactive =
       preferences.workLimitDuration + preferences.workIdleLimitDuration
 
     //NEXT_BREAK
-    this.schedulingFacade.scheduleNotification({
-      userId: userId,
-      title: pushMessage[0].title || '',
-      body: pushMessage[0].body || '',
-      category: pushMessage[0].category || '',
-      fcmToken: preferences.fcmToken,
-      delay: preferences.workDuration,
-    })
+    if (preferences.allowTimerNotifications == true) {
+      this.schedulingFacade.scheduleNotification({
+        userId: userId,
+        title: pushMessage[0].title || '',
+        body: pushMessage[0].body || '',
+        category: pushMessage[0].category || '',
+        fcmToken: preferences.fcmToken,
+        delay: preferences.workDuration,
+      })
+    } else {
+      console.log('[allowTimerNotifications: false] - NEXT_BREAK')
+    }
 
     //WORK_IDLE
     this.schedulingFacade.scheduleState({
       userId: userId,
-      idToken: idToken,
       state: this.workIdleState,
       delay: preferences.workLimitDuration,
     })
@@ -124,10 +129,11 @@ class StateMachineFacade extends IStateMachineFacade {
     }
   }
 
-  async onFinish({ userId, idToken, fromIdleState }) {
+  async onFinish({ userId, fromIdleState }) {
     const preferences = await this.timerPreferencesRepository.getTimerPreferences(
       userId
     )
+    if (!preferences) throw ClientError.notFound('Subscription Not Found')
 
     //operation is blocked
     if (!fromIdleState) {
@@ -152,7 +158,7 @@ class StateMachineFacade extends IStateMachineFacade {
         currentState: this.inactiveState,
       }),
 
-      this.analyticsServiceFacade.logFinish({ idToken }),
+      this.analyticsServiceFacade.logFinish({ userId }),
       this.schedulingFacade.removeJobsOnNotificationQueue({ userId }),
       this.schedulingFacade.removeJobsOnStateQueue({ userId }),
     ])
@@ -162,14 +168,18 @@ class StateMachineFacade extends IStateMachineFacade {
     })
 
     //START_CYCLE
-    this.schedulingFacade.scheduleNotification({
-      userId: userId,
-      title: pushMessage[0].title || '',
-      body: pushMessage[0].body || '',
-      category: pushMessage[0].category || '',
-      fcmToken: preferences.fcmToken,
-      delay: 5000 ?? millisecondsToStartCycle, //DEBUG: Retirar o '?? delay' para iniciar no próximo dia
-    })
+    if (preferences.allowTimerNotifications == true) {
+      this.schedulingFacade.scheduleNotification({
+        userId: userId,
+        title: pushMessage[0].title || '',
+        body: pushMessage[0].body || '',
+        category: pushMessage[0].category || '',
+        fcmToken: preferences.fcmToken,
+        delay: millisecondsToStartCycle,
+      })
+    } else {
+      console.log('[allowTimerNotifications: false] - START_CYCLE')
+    }
 
     return {
       status: {
@@ -187,10 +197,11 @@ class StateMachineFacade extends IStateMachineFacade {
     }
   }
 
-  async onWork({ userId, idToken, elapsedDuration }) {
+  async onWork({ userId, elapsedDuration }) {
     const preferences = await this.timerPreferencesRepository.getTimerPreferences(
       userId
     )
+    if (!preferences) throw ClientError.notFound('Subscription Not Found')
 
     //operation is blocked
     if (!elapsedDuration) {
@@ -216,7 +227,7 @@ class StateMachineFacade extends IStateMachineFacade {
         currentState: this.workState,
       }),
 
-      this.analyticsServiceFacade.logWork({ idToken }),
+      this.analyticsServiceFacade.logWork({ userId }),
       this.schedulingFacade.removeJobsOnNotificationQueue({ userId }),
       this.schedulingFacade.removeJobsOnStateQueue({ userId }),
     ])
@@ -231,19 +242,22 @@ class StateMachineFacade extends IStateMachineFacade {
       (elapsedDuration ?? 0)
 
     //NEXT_BREAK
-    this.schedulingFacade.scheduleNotification({
-      userId: userId,
-      title: pushMessage[0].title || '',
-      body: pushMessage[0].body || '',
-      category: pushMessage[0].category || '',
-      fcmToken: preferences.fcmToken,
-      delay: millisecondsToNextBreak,
-    })
+    if (preferences.allowTimerNotifications == true) {
+      this.schedulingFacade.scheduleNotification({
+        userId: userId,
+        title: pushMessage[0].title || '',
+        body: pushMessage[0].body || '',
+        category: pushMessage[0].category || '',
+        fcmToken: preferences.fcmToken,
+        delay: millisecondsToNextBreak,
+      })
+    } else {
+      console.log('[allowTimerNotifications: false] - NEXT_BREAK')
+    }
 
     //WORK_IDLE
     this.schedulingFacade.scheduleState({
       userId: userId,
-      idToken: idToken,
       state: this.workIdleState,
       delay: millisecondsToWorkIdle,
     })
@@ -264,10 +278,11 @@ class StateMachineFacade extends IStateMachineFacade {
     }
   }
 
-  async onBreak({ userId, idToken, elapsedDuration }) {
+  async onBreak({ userId, elapsedDuration }) {
     const preferences = await this.timerPreferencesRepository.getTimerPreferences(
       userId
     )
+    if (!preferences) throw ClientError.notFound('Subscription Not Found')
 
     //operation is blocked
     if (!elapsedDuration) {
@@ -293,7 +308,7 @@ class StateMachineFacade extends IStateMachineFacade {
         currentState: this.breakState,
       }),
 
-      this.analyticsServiceFacade.logBreak({ idToken }),
+      this.analyticsServiceFacade.logBreak({ userId }),
       this.schedulingFacade.removeJobsOnNotificationQueue({ userId }),
       this.schedulingFacade.removeJobsOnStateQueue({ userId }),
     ])
@@ -308,19 +323,22 @@ class StateMachineFacade extends IStateMachineFacade {
       (elapsedDuration ?? 0)
 
     //NEXT_WORK
-    this.schedulingFacade.scheduleNotification({
-      userId: userId,
-      title: pushMessage[0].title || '',
-      body: pushMessage[0].body || '',
-      category: pushMessage[0].category || '',
-      fcmToken: preferences.fcmToken,
-      delay: millisecondsToNextWork,
-    })
+    if (preferences.allowTimerNotifications == true) {
+      this.schedulingFacade.scheduleNotification({
+        userId: userId,
+        title: pushMessage[0].title || '',
+        body: pushMessage[0].body || '',
+        category: pushMessage[0].category || '',
+        fcmToken: preferences.fcmToken,
+        delay: millisecondsToNextWork,
+      })
+    } else {
+      console.log('[allowTimerNotifications: false] - NEXT_WORK')
+    }
 
     //BREAK_IDLE
     this.schedulingFacade.scheduleState({
       userId: userId,
-      idToken: idToken,
       state: this.breakIdleState,
       delay: millisecondsToBreakIdle,
     })
@@ -341,10 +359,11 @@ class StateMachineFacade extends IStateMachineFacade {
     }
   }
 
-  async onPause({ userId, idToken }) {
+  async onPause({ userId }) {
     const preferences = await this.timerPreferencesRepository.getTimerPreferences(
       userId
     )
+    if (!preferences) throw ClientError.notFound('Subscription Not Found')
 
     //operation is blocked
     if (!this.canPauseFrom(preferences.currentState)) {
@@ -364,7 +383,7 @@ class StateMachineFacade extends IStateMachineFacade {
         currentState: this.pauseState,
       }),
 
-      this.analyticsServiceFacade.logPause({ idToken }),
+      this.analyticsServiceFacade.logPause({ userId }),
       this.schedulingFacade.removeJobsOnNotificationQueue({ userId }),
       this.schedulingFacade.removeJobsOnStateQueue({ userId }),
     ])
@@ -375,7 +394,6 @@ class StateMachineFacade extends IStateMachineFacade {
     //PAUSE_IDLE
     this.schedulingFacade.scheduleState({
       userId: userId,
-      idToken: idToken,
       state: this.pauseIdleState,
       delay: preferences.pauseLimitDuration,
     })
@@ -396,10 +414,11 @@ class StateMachineFacade extends IStateMachineFacade {
     }
   }
 
-  async onResume({ userId, idToken }) {
+  async onResume({ userId }) {
     const preferences = await this.timerPreferencesRepository.getTimerPreferences(
       userId
     )
+    if (!preferences) throw ClientError.notFound('Subscription Not Found')
 
     //operation is blocked
     if (!this.canResumeFrom(preferences.currentState)) {
@@ -413,7 +432,7 @@ class StateMachineFacade extends IStateMachineFacade {
     }
 
     const [] = await Promise.all([
-      this.analyticsServiceFacade.logResume({ idToken }),
+      this.analyticsServiceFacade.logResume({ userId }),
     ])
 
     if (preferences.lastState === this.workState) {
@@ -424,7 +443,6 @@ class StateMachineFacade extends IStateMachineFacade {
 
       return this.onWork({
         userId,
-        idToken,
         elapsedDuration,
       })
     } else if (preferences.lastState === this.breakState) {
@@ -435,13 +453,12 @@ class StateMachineFacade extends IStateMachineFacade {
 
       return this.onBreak({
         userId,
-        idToken,
         elapsedDuration,
       })
     }
   }
 
-  async onWorkIdle({ userId, idToken }) {
+  async onWorkIdle({ userId }) {
     const [preferences, pushMessage, patchedPreferences] = await Promise.all([
       this.timerPreferencesRepository.getTimerPreferences(userId),
 
@@ -453,31 +470,34 @@ class StateMachineFacade extends IStateMachineFacade {
         currentState: this.workIdleState,
       }),
 
-      this.analyticsServiceFacade.logWorkIdle({ idToken }),
+      this.analyticsServiceFacade.logWorkIdle({ userId }),
       this.schedulingFacade.removeJobsOnNotificationQueue({ userId }),
       this.schedulingFacade.removeJobsOnStateQueue({ userId }),
     ])
 
     //WORK_IDLE
-    this.schedulingFacade.scheduleNotification({
-      userId: userId,
-      title: pushMessage[0].title || '',
-      body: pushMessage[0].body || '',
-      category: pushMessage[0].category || '',
-      fcmToken: preferences.fcmToken,
-      delay: 0,
-    })
+    if (preferences.allowTimerNotifications == true) {
+      this.schedulingFacade.scheduleNotification({
+        userId: userId,
+        title: pushMessage[0].title || '',
+        body: pushMessage[0].body || '',
+        category: pushMessage[0].category || '',
+        fcmToken: preferences.fcmToken,
+        delay: 0,
+      })
+    } else {
+      console.log('[allowTimerNotifications: false] - WORK_IDLE')
+    }
 
     //INACTIVE
     this.schedulingFacade.scheduleState({
       userId: userId,
-      idToken: idToken,
       state: this.inactiveState,
       delay: preferences.workIdleLimitDuration,
     })
   }
 
-  async onBreakIdle({ userId, idToken }) {
+  async onBreakIdle({ userId }) {
     const [preferences, pushMessage, patchedPreferences] = await Promise.all([
       this.timerPreferencesRepository.getTimerPreferences(userId),
 
@@ -489,31 +509,34 @@ class StateMachineFacade extends IStateMachineFacade {
         currentState: this.breakIdleState,
       }),
 
-      this.analyticsServiceFacade.logBreakIdle({ idToken }),
+      this.analyticsServiceFacade.logBreakIdle({ userId }),
       this.schedulingFacade.removeJobsOnNotificationQueue({ userId }),
       this.schedulingFacade.removeJobsOnStateQueue({ userId }),
     ])
 
     //BREAK_IDLE
-    this.schedulingFacade.scheduleNotification({
-      userId: userId,
-      title: pushMessage[0].title || '',
-      body: pushMessage[0].body || '',
-      category: pushMessage[0].category || '',
-      fcmToken: preferences.fcmToken,
-      delay: 0,
-    })
+    if (preferences.allowTimerNotifications == true) {
+      this.schedulingFacade.scheduleNotification({
+        userId: userId,
+        title: pushMessage[0].title || '',
+        body: pushMessage[0].body || '',
+        category: pushMessage[0].category || '',
+        fcmToken: preferences.fcmToken,
+        delay: 0,
+      })
+    } else {
+      console.log('[allowTimerNotifications: false] - BREAK_IDLE')
+    }
 
     //INACTIVE
     this.schedulingFacade.scheduleState({
       userId: userId,
-      idToken: idToken,
       state: this.inactiveState,
       delay: preferences.breakIdleLimitDuration,
     })
   }
 
-  async onPauseIdle({ userId, idToken }) {
+  async onPauseIdle({ userId }) {
     const [preferences, pushMessage, patchedPreferences] = await Promise.all([
       this.timerPreferencesRepository.getTimerPreferences(userId),
 
@@ -525,31 +548,34 @@ class StateMachineFacade extends IStateMachineFacade {
         currentState: this.pauseIdleState,
       }),
 
-      this.analyticsServiceFacade.logPauseIdle({ idToken }),
+      this.analyticsServiceFacade.logPauseIdle({ userId }),
       this.schedulingFacade.removeJobsOnNotificationQueue({ userId }),
       this.schedulingFacade.removeJobsOnStateQueue({ userId }),
     ])
 
     //PAUSE_IDLE
-    this.schedulingFacade.scheduleNotification({
-      userId: userId,
-      title: pushMessage[0].title || '',
-      body: pushMessage[0].body || '',
-      category: pushMessage[0].category || '',
-      fcmToken: preferences.fcmToken,
-      delay: 0,
-    })
+    if (preferences.allowTimerNotifications == true) {
+      this.schedulingFacade.scheduleNotification({
+        userId: userId,
+        title: pushMessage[0].title || '',
+        body: pushMessage[0].body || '',
+        category: pushMessage[0].category || '',
+        fcmToken: preferences.fcmToken,
+        delay: 0,
+      })
+    } else {
+      console.log('[allowTimerNotifications: false] - PAUSE_IDLE')
+    }
 
     //INACTIVE
     this.schedulingFacade.scheduleState({
       userId: userId,
-      idToken: idToken,
       state: this.inactiveState,
       delay: preferences.pauseIdleLimitDuration,
     })
   }
 
-  async onInactive({ userId, idToken }) {
+  async onInactive({ userId }) {
     const preferences = await this.timerPreferencesRepository.getTimerPreferences(
       userId
     )
@@ -564,45 +590,128 @@ class StateMachineFacade extends IStateMachineFacade {
         currentState: this.inactiveState,
       }),
 
-      this.analyticsServiceFacade.logInactive({ idToken }),
+      this.analyticsServiceFacade.logInactive({ userId }),
       this.schedulingFacade.removeJobsOnNotificationQueue({ userId }),
       this.schedulingFacade.removeJobsOnStateQueue({ userId }),
     ])
 
     //INACTIVE
-    this.schedulingFacade.scheduleNotification({
-      userId: userId,
-      title: pushMessage[0].title || '',
-      body: pushMessage[0].body || '',
-      category: pushMessage[0].category || '',
-      fcmToken: preferences.fcmToken,
-      delay: 0,
-    })
+    if (preferences.allowTimerNotifications == true) {
+      this.schedulingFacade.scheduleNotification({
+        userId: userId,
+        title: pushMessage[0].title || '',
+        body: pushMessage[0].body || '',
+        category: pushMessage[0].category || '',
+        fcmToken: preferences.fcmToken,
+        delay: 0,
+      })
+    } else {
+      console.log('[allowTimerNotifications: false] - INACTIVE')
+    }
 
-    this.onFinish({ userId, idToken, fromIdleState: true })
+    this.onFinish({ userId, fromIdleState: true })
   }
 
-  async onStatus({ userId, idToken }) {
+  async onStatus({ userId }) {
     const [preferences] = await Promise.all([
       this.timerPreferencesRepository.getTimerPreferences(userId),
     ])
 
-    // const nowTimestamp = new Date().getTime()
-    // const lastBreakTs = new Date(preferences.lastBreakStartTime).getTime()
-    // const lastWorkTs = new Date(preferences.lastWorkStartTime).getTime()
-    // const lastPauseTs = new Date(preferences.lastPauseStartTime).getTime()
+    if (!preferences) throw ClientError.notFound('Subscription Not Found')
 
-    //TODO: - calculate responses
+    var millisecondsToStartCycle = null
+    var millisecondsToNextBreak = null
+    var millisecondsToNextWork = null
+    var millisecondsToBreakIdle = null
+    var millisecondsToWorkIdle = null
+    var millisecondsToPauseIdle = null
+    var millisecondsToInactive = null
+
+    const nowTimestamp = new Date().getTime()
+    const lastWorkTimestamp = new Date(preferences.lastWorkStartTime).getTime()
+    const lastBreakTimestamp = new Date(
+      preferences.lastBreakStartTime
+    ).getTime()
+    const lastPauseTimestamp = new Date(
+      preferences.lastPauseStartTime
+    ).getTime()
+
+    const workDuration = preferences.workDuration
+    const workLimitDuration = preferences.workLimitDuration
+    const workIdleLimitDuration = preferences.workIdleLimitDuration
+
+    const breakDuration = preferences.breakDuration
+    const breakLimitDuration = preferences.breakLimitDuration
+    const breakIdleLimitDuration = preferences.breakIdleLimitDuration
+
+    const pauseLimitDuration = preferences.pauseLimitDuration
+    const pauseIdleLimitDuration = preferences.pauseIdleLimitDuration
+
+    switch (preferences.currentState) {
+      case this.workState:
+        const elapsedWorkStateTime = nowTimestamp - lastWorkTimestamp
+        millisecondsToNextBreak = workDuration - elapsedWorkStateTime
+        millisecondsToWorkIdle = workLimitDuration - elapsedWorkStateTime
+        millisecondsToInactive =
+          workLimitDuration + workIdleLimitDuration - elapsedWorkStateTime
+        break
+
+      case this.breakState:
+        const elapsedBreakStateTime = nowTimestamp - lastBreakTimestamp
+        millisecondsToNextWork = breakDuration - elapsedBreakStateTime
+        millisecondsToBreakIdle = breakLimitDuration - elapsedBreakStateTime
+        millisecondsToInactive =
+          breakLimitDuration + breakIdleLimitDuration - elapsedBreakStateTime
+        break
+
+      case this.pauseState:
+        const elapsedPauseStateTime = nowTimestamp - lastPauseTimestamp
+        millisecondsToPauseIdle = pauseLimitDuration - elapsedPauseStateTime
+        millisecondsToInactive =
+          pauseLimitDuration + pauseIdleLimitDuration - elapsedPauseStateTime
+        break
+
+      case this.workIdleState:
+        const elapsedWorkIdleStateTime = nowTimestamp - lastWorkTimestamp
+        millisecondsToInactive =
+          workLimitDuration + workIdleLimitDuration - elapsedWorkIdleStateTime
+        break
+
+      case this.breakIdleState:
+        const elapsedBreakIdleStateTime = nowTimestamp - lastBreakTimestamp
+        millisecondsToInactive =
+          breakLimitDuration +
+          breakIdleLimitDuration -
+          elapsedBreakIdleStateTime
+        break
+
+      case this.pauseIdleState:
+        const elapsedPauseIdleStateTime = nowTimestamp - lastPauseTimestamp
+        millisecondsToInactive =
+          pauseLimitDuration +
+          pauseIdleLimitDuration -
+          elapsedPauseIdleStateTime
+        break
+
+      case this.inactiveState:
+        millisecondsToStartCycle = this.getMillisecondsToNextStartCycleDate({
+          startDate: preferences.startTime,
+        })
+        break
+      default:
+        break
+    }
+
     return {
       lastState: preferences.lastState,
       currentState: preferences.currentState,
-      millisecondsToStartCycle: null,
-      millisecondsToNextBreak: null,
-      millisecondsToNextWork: null,
-      millisecondsToBreakIdle: null,
-      millisecondsToWorkIdle: null,
-      millisecondsToPauseIdle: null,
-      millisecondsToInactive: null,
+      millisecondsToStartCycle,
+      millisecondsToNextBreak,
+      millisecondsToNextWork,
+      millisecondsToBreakIdle,
+      millisecondsToWorkIdle,
+      millisecondsToPauseIdle,
+      millisecondsToInactive,
     }
   }
 

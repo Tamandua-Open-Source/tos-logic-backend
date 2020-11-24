@@ -1,4 +1,6 @@
 import db from '../orm/models'
+import ServerError from '../../interfaces/core/server-error'
+import ClientError from '../../interfaces/core/client-error'
 
 class TimerPreferencesRepository {
   async createTimerPreferences(userId) {
@@ -6,6 +8,7 @@ class TimerPreferencesRepository {
       UserId: userId,
       fcmToken: null,
       startTime: new Date(),
+      allowTimerNotifications: true,
       breakDuration: 900000, // 15 min
       breakLimitDuration: 1200000, // 20 min
       breakIdleLimitDuration: 300000, // 5 min
@@ -39,7 +42,8 @@ class TimerPreferencesRepository {
       },
     })
 
-    if (!timerPreferences) return null
+    if (!timerPreferences)
+      throw ClientError.notFound('Timer Preferences Not Found')
 
     return await timerPreferences.update(updatedFields)
   }

@@ -23,6 +23,10 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         allowNull: true,
       },
+      allowTimerNotifications: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+      },
       startTime: {
         type: DataTypes.DATE,
         allowNull: false,
