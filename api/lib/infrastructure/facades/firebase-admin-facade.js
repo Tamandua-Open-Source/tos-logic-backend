@@ -1,4 +1,5 @@
 import * as firebaseAdmin from 'firebase-admin'
+import { v4 as uuidv4 } from 'uuid'
 
 import * as dotenv from 'dotenv'
 dotenv.config()
